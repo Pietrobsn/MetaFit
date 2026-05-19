@@ -1,0 +1,3793 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MetaFit • Sistema de Metas para Academia</title>
+  <style>
+    :root {
+      --bg: #f4f8f5;
+      --panel: #ffffff;
+      --panel-soft: #f7fbf8;
+      --line: rgba(15, 23, 42, .09);
+      --line-strong: rgba(15, 23, 42, .16);
+      --text: #0f172a;
+      --muted: #64748b;
+      --green: #16a34a;
+      --green-dark: #166534;
+      --green-soft: rgba(22, 163, 74, .11);
+      --lime: #84cc16;
+      --amber: #f59e0b;
+      --amber-soft: rgba(245, 158, 11, .14);
+      --red: #dc2626;
+      --red-soft: rgba(220, 38, 38, .11);
+      --blue: #2563eb;
+      --blue-soft: rgba(37, 99, 235, .11);
+      --violet: #7c3aed;
+      --violet-soft: rgba(124, 58, 237, .11);
+      --shadow: 0 18px 46px rgba(15, 23, 42, .08);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(132, 204, 22, .18), transparent 28%),
+        radial-gradient(circle at 90% 0%, rgba(22, 163, 74, .14), transparent 24%),
+        linear-gradient(180deg, #fbfdfb 0%, var(--bg) 100%);
+    }
+
+    button, input, select, textarea { font: inherit; }
+
+    .app {
+      width: min(1480px, calc(100% - 28px));
+      margin: 18px auto 30px;
+    }
+
+    .topbar,
+    .hero,
+    .panel,
+    .metric-card,
+    .table-card,
+    .board-column,
+    .lead-card {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.89));
+      box-shadow: var(--shadow);
+    }
+
+    .topbar {
+      position: sticky;
+      top: 12px;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      padding: 16px;
+      border-radius: 28px;
+      margin-bottom: 14px;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand,
+    .actions,
+    .tabs,
+    .pill-row,
+    .toolbar-actions,
+    .row,
+    .mini-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .brand {
+      gap: 14px;
+    }
+
+    .logo {
+      width: 54px;
+      height: 54px;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      color: #fff;
+      font-weight: 950;
+      letter-spacing: -.05em;
+      background: linear-gradient(135deg, var(--green-dark), var(--green));
+      box-shadow: 0 16px 28px rgba(22, 163, 74, .24);
+    }
+
+    h1, h2, h3, p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 4px;
+      font-size: clamp(22px, 3vw, 30px);
+      line-height: 1;
+      letter-spacing: -.05em;
+    }
+
+    .subtitle,
+    .muted,
+    small,
+    label {
+      color: var(--muted);
+    }
+
+    .subtitle {
+      font-size: 13px;
+    }
+
+    button,
+    .btn {
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: rgba(15, 23, 42, .03);
+      color: var(--text);
+      padding: 11px 13px;
+      cursor: pointer;
+      font-weight: 850;
+      transition: .18s ease;
+    }
+
+    button:hover,
+    .btn:hover {
+      transform: translateY(-1px);
+      border-color: var(--line-strong);
+      background: rgba(15, 23, 42, .055);
+    }
+
+    button.primary {
+      border: 0;
+      color: #fff;
+      background: linear-gradient(135deg, var(--green-dark), var(--green));
+    }
+
+    button.danger {
+      color: #b91c1c;
+      background: var(--red-soft);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(330px, .72fr);
+      gap: 16px;
+      border-radius: 28px;
+      padding: 20px;
+      margin-bottom: 14px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(132, 204, 22, .16), transparent 28%),
+        linear-gradient(135deg, rgba(22, 163, 74, .08), rgba(255,255,255,.92));
+    }
+
+    .eyebrow {
+      color: var(--green-dark);
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    .hero h2 {
+      margin: 10px 0 10px;
+      font-size: clamp(26px, 4vw, 40px);
+      line-height: .98;
+      letter-spacing: -.055em;
+    }
+
+    .hero p {
+      color: var(--muted);
+      line-height: 1.55;
+      max-width: 850px;
+      margin-bottom: 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.75);
+      border: 1px solid var(--line);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .hero-side {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .signal {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 14px;
+      background: rgba(255,255,255,.8);
+    }
+
+    .signal strong {
+      display: block;
+      font-size: 20px;
+      margin-top: 5px;
+      letter-spacing: -.03em;
+    }
+
+    .filterbar {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr auto;
+      gap: 12px;
+      align-items: end;
+      padding: 16px;
+      margin-bottom: 14px;
+      border-radius: 24px;
+    }
+
+    label {
+      display: grid;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: #fff;
+      color: var(--text);
+      padding: 11px 12px;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(22, 163, 74, .6);
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, .12);
+    }
+
+    textarea {
+      min-height: 96px;
+      resize: vertical;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .metric-card {
+      border-radius: 22px;
+      padding: 15px;
+    }
+
+    .metric-card .label {
+      font-size: 12px;
+      font-weight: 850;
+      color: var(--muted);
+    }
+
+    .metric-card .value {
+      margin-top: 8px;
+      font-size: clamp(20px, 2vw, 28px);
+      font-weight: 950;
+      letter-spacing: -.045em;
+    }
+
+    .metric-card .sub {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+      margin-top: 5px;
+    }
+
+    .tabs {
+      padding: 8px;
+      border-radius: 19px;
+      background: rgba(255,255,255,.75);
+      border: 1px solid var(--line);
+      margin-bottom: 14px;
+    }
+
+    .tab {
+      color: var(--muted);
+    }
+
+    .tab.active {
+      border: 0;
+      color: #fff;
+      background: linear-gradient(135deg, var(--green-dark), var(--green));
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .dashboard-grid,
+    .split,
+    .report-grid,
+    .form-layout {
+      display: grid;
+      gap: 14px;
+    }
+
+    .dashboard-grid {
+      grid-template-columns: minmax(0, 1.25fr) minmax(330px, .75fr);
+    }
+
+    .split {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .report-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .form-layout {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .panel {
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      margin-bottom: 14px;
+    }
+
+    .panel-title {
+      font-size: 18px;
+      font-weight: 950;
+      letter-spacing: -.03em;
+    }
+
+    .panel-subtitle {
+      color: var(--muted);
+      margin-top: 4px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .table-card {
+      border-radius: 22px;
+      overflow: hidden;
+    }
+
+    .table-wrap {
+      overflow: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    th,
+    td {
+      padding: 12px 11px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      font-size: 13px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f2f8f3;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .progress {
+      min-width: 150px;
+    }
+
+    .bar {
+      height: 10px;
+      background: #e9f1eb;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 7px;
+    }
+
+    .bar span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--green-dark), var(--green));
+    }
+
+    .badge,
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 900;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .ok {
+      color: var(--green-dark);
+      background: var(--green-soft);
+      border-color: rgba(22, 163, 74, .18);
+    }
+
+    .warn {
+      color: #92400e;
+      background: var(--amber-soft);
+      border-color: rgba(245, 158, 11, .22);
+    }
+
+    .bad {
+      color: #991b1b;
+      background: var(--red-soft);
+      border-color: rgba(220, 38, 38, .2);
+    }
+
+    .blue {
+      color: #1d4ed8;
+      background: var(--blue-soft);
+      border-color: rgba(37, 99, 235, .18);
+    }
+
+    .violet {
+      color: #6d28d9;
+      background: var(--violet-soft);
+      border-color: rgba(124, 58, 237, .18);
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .list-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel-soft);
+      padding: 12px;
+    }
+
+    .list-item small {
+      display: block;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .category-grid,
+    .mini-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mini-card {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 13px;
+      background: var(--panel-soft);
+    }
+
+    .mini-card b {
+      display: block;
+      margin-top: 6px;
+      font-size: 20px;
+      letter-spacing: -.03em;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .span-2 { grid-column: span 2; }
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+
+    .notice {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 16px;
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .notice.show { display: block; }
+    .notice.ok { background: var(--green-soft); color: var(--green-dark); }
+    .notice.warn { background: var(--amber-soft); color: #92400e; }
+    .notice.err { background: var(--red-soft); color: #991b1b; }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(230px, 1fr));
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .board-column {
+      border-radius: 22px;
+      overflow: hidden;
+      min-height: 360px;
+    }
+
+    .board-head {
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      background: rgba(247, 251, 248, .92);
+    }
+
+    .lead-list {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+      align-content: start;
+    }
+
+    .lead-card {
+      border-radius: 18px;
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+      background: #fff;
+    }
+
+    .lead-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .lead-name {
+      font-weight: 950;
+      letter-spacing: -.02em;
+    }
+
+    .tiny {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .empty {
+      padding: 22px;
+      color: var(--muted);
+      text-align: center;
+      border: 1px dashed var(--line);
+      border-radius: 18px;
+      line-height: 1.45;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 50;
+      display: none;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px 14px;
+      background: #fff;
+      box-shadow: var(--shadow);
+      font-weight: 850;
+    }
+
+    .toast.show {
+      display: block;
+    }
+
+    .login-screen {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(132, 204, 22, .22), transparent 26%),
+        linear-gradient(135deg, #07140b 0%, #12301b 100%);
+    }
+
+    .login-card {
+      width: min(1020px, 100%);
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr);
+      border-radius: 30px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 28px 90px rgba(0, 0, 0, .22);
+    }
+
+    .login-brand {
+      padding: 30px;
+      color: #fff;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(132, 204, 22, .28), transparent 28%),
+        linear-gradient(145deg, #07140b, #166534);
+      display: grid;
+      gap: 18px;
+      align-content: space-between;
+    }
+
+    .login-brand h2 {
+      margin: 14px 0 10px;
+      font-size: clamp(28px, 4vw, 40px);
+      line-height: 1;
+      letter-spacing: -.05em;
+    }
+
+    .login-brand p {
+      color: rgba(240, 253, 244, .8);
+      line-height: 1.55;
+      max-width: 540px;
+    }
+
+    .login-form {
+      padding: 30px;
+      display: grid;
+      gap: 14px;
+      align-content: center;
+    }
+
+    .login-form h3 {
+      margin-bottom: 4px;
+      font-size: 26px;
+      letter-spacing: -.03em;
+    }
+
+    .login-help {
+      border: 1px solid rgba(22, 163, 74, .16);
+      border-radius: 18px;
+      background: rgba(22, 163, 74, .08);
+      color: var(--green-dark);
+      padding: 13px;
+      line-height: 1.45;
+      font-size: 13px;
+    }
+
+    .user-pill,
+    .sync-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border-radius: 999px;
+      padding: 8px 11px;
+      font-size: 12px;
+      font-weight: 900;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.78);
+    }
+
+    .user-pill {
+      color: var(--green-dark);
+    }
+
+    .sync-pill {
+      color: #1d4ed8;
+      background: var(--blue-soft);
+    }
+
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .check-card {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 10px;
+      background: var(--panel-soft);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .check-card input {
+      width: auto;
+      margin: 0;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 1260px) {
+      .metrics {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .hero,
+      .dashboard-grid,
+      .report-grid,
+      .form-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .filterbar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 820px) {
+      .app {
+        width: min(100%, calc(100% - 18px));
+        margin-top: 10px;
+      }
+
+      .topbar {
+        position: static;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .metrics,
+      .split,
+      .category-grid,
+      .mini-grid,
+      .form-grid,
+      .filterbar {
+        grid-template-columns: 1fr;
+      }
+
+      .span-2,
+      .span-3,
+      .span-4 {
+        grid-column: span 1;
+      }
+
+      .board {
+        grid-template-columns: repeat(5, 82vw);
+      }
+
+      .login-card,
+      .checkbox-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .topbar,
+      .hero,
+      .filterbar,
+      .tabs,
+      .actions,
+      .toolbar-actions,
+      .mini-actions,
+      .toast,
+      .no-print {
+        display: none !important;
+      }
+
+      .app {
+        width: 100%;
+        margin: 0;
+      }
+
+      .section {
+        display: none !important;
+      }
+
+      #reports.section {
+        display: block !important;
+      }
+
+      .panel,
+      .metric-card,
+      .table-card,
+      .mini-card,
+      .list-item {
+        box-shadow: none;
+        background: #fff;
+      }
+
+      th {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="login-screen hidden" id="loginScreen">
+    <div class="login-card">
+      <div class="login-brand">
+        <div>
+          <div class="eyebrow" style="color:#bbf7d0">MetaFit • acesso interno</div>
+          <h2>Metas por unidade, mas cada login enxerga só o pedaço certo do mapa.</h2>
+          <p>
+            O ADM vê tudo, cria acessos antes da operação começar e decide exatamente quais unidades cada usuário pode acompanhar.
+          </p>
+        </div>
+        <div class="pill-row">
+          <span class="pill">ADM global</span>
+          <span class="pill">Múltiplas unidades por login</span>
+          <span class="pill">CRM + vendas</span>
+        </div>
+      </div>
+      <form class="login-form" id="loginForm">
+        <div>
+          <h3>Entrar no MetaFit</h3>
+          <div class="muted">Use o login criado pelo ADM.</div>
+        </div>
+        <div id="loginNotice" class="notice"></div>
+        <label>Login
+          <input id="loginUser" autocomplete="username" placeholder="Ex.: ur3_comercial" required />
+        </label>
+        <label>Senha
+          <input id="loginPassword" type="password" autocomplete="current-password" placeholder="••••••••" required />
+        </label>
+        <button class="primary" type="submit">Entrar</button>
+        <div class="login-help">
+          Se for a primeira instalação, o sistema abre a criação do primeiro ADM antes do login comum.
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section class="login-screen hidden" id="setupScreen">
+    <div class="login-card">
+      <div class="login-brand">
+        <div>
+          <div class="eyebrow" style="color:#bbf7d0">Primeira instalação</div>
+          <h2>Crie o primeiro ADM e depois ele abre os demais acessos com calma.</h2>
+          <p>
+            Esse primeiro usuário nasce com visão total. Depois, dentro do próprio MetaFit,
+            ele pode cadastrar logins adiantados e limitar cada um às unidades corretas.
+          </p>
+        </div>
+      </div>
+      <form class="login-form" id="setupForm">
+        <div>
+          <h3>Criar primeiro ADM</h3>
+          <div class="muted">Disponível apenas enquanto não existir nenhum administrador.</div>
+        </div>
+        <div id="setupNotice" class="notice"></div>
+        <label>Nome
+          <input id="setupName" placeholder="Ex.: Pietro" required />
+        </label>
+        <label>Login
+          <input id="setupLogin" placeholder="Ex.: adm" required />
+        </label>
+        <label>Senha
+          <input id="setupPassword" type="password" minlength="6" placeholder="mínimo 6 caracteres" required />
+        </label>
+        <button class="primary" type="submit">Criar ADM</button>
+      </form>
+    </div>
+  </section>
+
+  <div class="app hidden" id="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">MF</div>
+        <div>
+          <h1>MetaFit</h1>
+          <div class="subtitle">Metas + CRM para academia • online com acesso por unidade ou offline para teste</div>
+        </div>
+      </div>
+      <div class="actions">
+        <span class="sync-pill" id="syncStatus">Modo local</span>
+        <span class="user-pill" id="currentUserBadge">ADM local</span>
+        <button class="primary" onclick="setActiveTab('sales')">+ Lançar venda</button>
+        <button onclick="backupJSON()">Backup</button>
+        <label class="btn" for="importFile">Importar</label>
+        <input id="importFile" type="file" accept="application/json" hidden onchange="importJSON(event)" />
+        <button onclick="exportExcel()">Exportar Excel</button>
+        <button onclick="printReport()">PDF</button>
+        <button id="logoutBtn" class="hidden" onclick="logout()">Sair</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Meta que conversa com venda</div>
+        <h2>O lead vira aluno, a venda cai na meta e o dono enxerga o jogo inteiro em tempo real.</h2>
+        <p>
+          Controle metas mensais por unidade e por consultor, acompanhe matrículas, renovações,
+          recuperação de inadimplentes e vendas extras, calcule comissão e descubra quem realmente converte.
+        </p>
+        <div class="pill-row">
+          <span class="pill">Painel do dono</span>
+          <span class="pill">Painel do consultor</span>
+          <span class="pill">Ranking automático</span>
+          <span class="pill">CRM integrado</span>
+        </div>
+      </div>
+      <div class="hero-side" id="heroSignals"></div>
+    </section>
+
+    <section class="panel filterbar">
+      <label>Visão
+        <select id="viewMode" onchange="handleViewModeChange()">
+          <option value="owner">Painel do dono</option>
+          <option value="consultant">Painel do consultor</option>
+        </select>
+      </label>
+      <label>Mês
+        <input id="filterMonth" type="month" onchange="renderAll()" />
+      </label>
+      <label>Unidade
+        <select id="filterUnit" onchange="handleUnitFilterChange()"></select>
+      </label>
+      <label>Consultor
+        <select id="filterConsultant" onchange="renderAll()"></select>
+      </label>
+      <button onclick="clearFilters()">Limpar filtros</button>
+    </section>
+
+    <section class="metrics" id="metrics"></section>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="dashboard" onclick="setActiveTab('dashboard', this)">Dashboard</button>
+      <button class="tab only-admin" data-tab="goals" onclick="setActiveTab('goals', this)">Metas</button>
+      <button class="tab" data-tab="sales" onclick="setActiveTab('sales', this)">Vendas</button>
+      <button class="tab" data-tab="crm" onclick="setActiveTab('crm', this)">CRM</button>
+      <button class="tab" data-tab="reports" onclick="setActiveTab('reports', this)">Relatórios</button>
+      <button class="tab only-admin remote-only" data-tab="users" onclick="setActiveTab('users', this)">Usuários</button>
+    </nav>
+
+    <section id="dashboard" class="section active">
+      <div id="dashboardContent"></div>
+    </section>
+
+    <section id="goals" class="section">
+      <div class="form-layout">
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Meta mensal por unidade</div>
+              <div class="panel-subtitle">Cadastre o alvo total e a composição por frente de receita.</div>
+            </div>
+          </div>
+          <div id="unitGoalNotice" class="notice"></div>
+          <form id="unitGoalForm" class="form-grid" onsubmit="saveUnitGoal(event)">
+            <input type="hidden" id="unitGoalId" />
+            <label>Mês
+              <input id="unitGoalMonth" type="month" required />
+            </label>
+            <label>Unidade
+              <select id="unitGoalUnit" required></select>
+            </label>
+            <label>Meta total
+              <input id="unitGoalTarget" type="number" min="0" step="0.01" placeholder="50000" required />
+            </label>
+            <label>Matrículas novas
+              <input id="unitGoalMatricula" type="number" min="0" step="0.01" placeholder="18000" required />
+            </label>
+            <label>Renovações
+              <input id="unitGoalRenovacao" type="number" min="0" step="0.01" placeholder="16000" required />
+            </label>
+            <label>Recuperação
+              <input id="unitGoalRecuperacao" type="number" min="0" step="0.01" placeholder="8000" required />
+            </label>
+            <label>Vendas extras
+              <input id="unitGoalExtra" type="number" min="0" step="0.01" placeholder="8000" required />
+            </label>
+            <div class="span-4 toolbar-actions">
+              <button class="primary" type="submit">Salvar meta da unidade</button>
+              <button type="button" onclick="resetUnitGoalForm()">Limpar</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Meta por consultor</div>
+              <div class="panel-subtitle">Comissão só libera quando a meta individual é batida.</div>
+            </div>
+          </div>
+          <div id="consultantGoalNotice" class="notice"></div>
+          <form id="consultantGoalForm" class="form-grid" onsubmit="saveConsultantGoal(event)">
+            <input type="hidden" id="consultantGoalId" />
+            <label>Mês
+              <input id="consultantGoalMonth" type="month" required />
+            </label>
+            <label>Consultor
+              <select id="consultantGoalConsultant" required></select>
+            </label>
+            <label>Meta
+              <input id="consultantGoalTarget" type="number" min="0" step="0.01" placeholder="10000" required />
+            </label>
+            <label>Comissão ao bater (%)
+              <input id="consultantGoalCommission" type="number" min="0" step="0.01" placeholder="3" required />
+            </label>
+            <div class="span-4 toolbar-actions">
+              <button class="primary" type="submit">Salvar meta do consultor</button>
+              <button type="button" onclick="resetConsultantGoalForm()">Limpar</button>
+            </div>
+          </form>
+        </article>
+      </div>
+
+      <div class="split" style="margin-top:14px">
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Unidades cadastradas</div>
+              <div class="panel-subtitle">Estrutura mínima para comparar a operação.</div>
+            </div>
+          </div>
+          <div id="unitNotice" class="notice"></div>
+          <form class="form-grid" onsubmit="saveUnit(event)">
+            <input type="hidden" id="unitId" />
+            <label class="span-3">Nome da unidade
+              <input id="unitName" placeholder="Ex.: UR-03" required />
+            </label>
+            <div class="toolbar-actions" style="align-self:end">
+              <button class="primary" type="submit">Salvar unidade</button>
+              <button type="button" onclick="resetUnitForm()">Limpar</button>
+            </div>
+          </form>
+          <div class="table-card" style="margin-top:14px">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Unidade</th><th>Consultores</th><th>Ações</th></tr>
+                </thead>
+                <tbody id="unitsRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Equipe comercial</div>
+              <div class="panel-subtitle">Cadastre quem carrega meta e ranking.</div>
+            </div>
+          </div>
+          <div id="consultantNotice" class="notice"></div>
+          <form class="form-grid" onsubmit="saveConsultant(event)">
+            <input type="hidden" id="consultantId" />
+            <label class="span-2">Nome
+              <input id="consultantName" placeholder="Ex.: João" required />
+            </label>
+            <label>Unidade
+              <select id="consultantUnit" required></select>
+            </label>
+            <label>Status
+              <select id="consultantActive">
+                <option value="true">Ativo</option>
+                <option value="false">Inativo</option>
+              </select>
+            </label>
+            <div class="span-4 toolbar-actions">
+              <button class="primary" type="submit">Salvar consultor</button>
+              <button type="button" onclick="resetConsultantForm()">Limpar</button>
+            </div>
+          </form>
+          <div class="table-card" style="margin-top:14px">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Consultor</th><th>Unidade</th><th>Status</th><th>Ações</th></tr>
+                </thead>
+                <tbody id="consultantsRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="split" style="margin-top:14px">
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Metas de unidade</div>
+              <div class="panel-subtitle">O motor do comparativo entre unidades.</div>
+            </div>
+          </div>
+          <div class="table-card">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Mês</th><th>Unidade</th><th>Total</th><th>Matrículas</th><th>Renovações</th>
+                    <th>Recuperação</th><th>Extras</th><th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="unitGoalsRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Metas de consultor</div>
+              <div class="panel-subtitle">Base do ranking e das comissões.</div>
+            </div>
+          </div>
+          <div class="table-card">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Mês</th><th>Consultor</th><th>Meta</th><th>Comissão</th><th>Ações</th></tr>
+                </thead>
+                <tbody id="consultantGoalsRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="sales" class="section">
+      <div class="split">
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Lançamento de venda</div>
+              <div class="panel-subtitle">Cada venda alimenta meta, ranking, comissão e o painel do dono.</div>
+            </div>
+          </div>
+          <div id="saleNotice" class="notice"></div>
+          <form id="saleForm" class="form-grid" onsubmit="saveSale(event)">
+            <input type="hidden" id="saleId" />
+            <label>Data
+              <input id="saleDate" type="date" required />
+            </label>
+            <label>Unidade
+              <select id="saleUnit" onchange="hydrateSaleConsultants()" required></select>
+            </label>
+            <label>Consultor
+              <select id="saleConsultant" required></select>
+            </label>
+            <label>Tipo
+              <select id="saleType" onchange="toggleExtraField()" required>
+                <option value="matricula">Matrícula nova</option>
+                <option value="renovacao">Renovação</option>
+                <option value="recuperacao">Recuperação de inadimplente</option>
+                <option value="extra">Venda extra</option>
+              </select>
+            </label>
+            <label>Valor
+              <input id="saleAmount" type="number" min="0" step="0.01" placeholder="1200" required />
+            </label>
+            <label class="span-2">Aluno / cliente
+              <input id="saleStudent" placeholder="Ex.: Ana Lima" required />
+            </label>
+            <label>Lead vinculado
+              <select id="saleLead"></select>
+            </label>
+            <label id="extraDetailWrap" class="span-2 hidden">Detalhe da venda extra
+              <input id="saleExtraDetail" placeholder="Suplemento, avaliação, personal, plano anual..." />
+            </label>
+            <label class="span-4">Observação
+              <textarea id="saleNotes" placeholder="Opcional"></textarea>
+            </label>
+            <div class="span-4 toolbar-actions">
+              <button class="primary" type="submit">Salvar venda</button>
+              <button type="button" onclick="resetSaleForm()">Limpar</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Leitura rápida das vendas</div>
+              <div class="panel-subtitle">O mix mostra de onde a meta está vindo.</div>
+            </div>
+          </div>
+          <div id="salesQuickRead" class="mini-grid"></div>
+        </article>
+      </div>
+
+      <article class="panel" style="margin-top:14px">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">Vendas lançadas</div>
+            <div class="panel-subtitle">Filtradas pelo recorte atual.</div>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Data</th><th>Aluno</th><th>Unidade</th><th>Consultor</th><th>Tipo</th>
+                  <th>Valor</th><th>Lead</th><th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="salesRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section id="crm" class="section">
+      <div class="split">
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Cadastro de lead</div>
+              <div class="panel-subtitle">Quando o lead vira matrícula, a venda entra na meta automaticamente.</div>
+            </div>
+          </div>
+          <div id="leadNotice" class="notice"></div>
+          <form id="leadForm" class="form-grid" onsubmit="saveLead(event)">
+            <input type="hidden" id="leadId" />
+            <label class="span-2">Nome
+              <input id="leadName" placeholder="Ex.: Bruno Silva" required />
+            </label>
+            <label>Telefone
+              <input id="leadPhone" placeholder="(81) 99999-9999" />
+            </label>
+            <label>Origem
+              <input id="leadSource" placeholder="Instagram, indicação..." />
+            </label>
+            <label>Data de entrada
+              <input id="leadCreatedAt" type="date" required />
+            </label>
+            <label>Unidade
+              <select id="leadUnit" onchange="hydrateLeadConsultants()" required></select>
+            </label>
+            <label>Consultor
+              <select id="leadConsultant" required></select>
+            </label>
+            <label>Valor previsto
+              <input id="leadExpectedValue" type="number" min="0" step="0.01" placeholder="1200" />
+            </label>
+            <label>Status
+              <select id="leadStatus">
+                <option value="novo">Novo</option>
+                <option value="contato">Em contato</option>
+                <option value="agendado">Agendado</option>
+                <option value="matriculado">Matriculado</option>
+                <option value="perdido">Perdido</option>
+              </select>
+            </label>
+            <div class="span-4 toolbar-actions">
+              <button class="primary" type="submit">Salvar lead</button>
+              <button type="button" onclick="resetLeadForm()">Limpar</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Funil do CRM</div>
+              <div class="panel-subtitle">Quem converte melhor aparece sem precisar cavar planilha.</div>
+            </div>
+          </div>
+          <div id="crmQuickRead" class="mini-grid"></div>
+        </article>
+      </div>
+
+      <article class="panel" style="margin-top:14px">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">Pipeline de leads</div>
+            <div class="panel-subtitle">Mover um lead até “Matriculado” gera a venda de matrícula nova.</div>
+          </div>
+        </div>
+        <div id="crmBoard" class="board"></div>
+      </article>
+    </section>
+
+    <section id="reports" class="section">
+      <div id="reportSummary" class="report-grid"></div>
+
+      <div class="split" style="margin-top:14px">
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Comparativo entre unidades</div>
+              <div class="panel-subtitle">Resumo do recorte atual.</div>
+            </div>
+          </div>
+          <div class="table-card">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Unidade</th><th>Meta</th><th>Realizado</th><th>Falta</th><th>Progresso</th></tr>
+                </thead>
+                <tbody id="reportUnitRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Ranking dos consultores</div>
+              <div class="panel-subtitle">Comissão calculada automaticamente.</div>
+            </div>
+          </div>
+          <div class="table-card">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Consultor</th><th>Meta</th><th>Vendeu</th><th>Status</th><th>Comissão</th></tr>
+                </thead>
+                <tbody id="reportConsultantRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="split" style="margin-top:14px">
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Vendas detalhadas</div>
+              <div class="panel-subtitle">Base para conferência e auditoria.</div>
+            </div>
+          </div>
+          <div class="table-card">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Data</th><th>Aluno</th><th>Consultor</th><th>Tipo</th><th>Valor</th></tr>
+                </thead>
+                <tbody id="reportSalesRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Conversão do CRM</div>
+              <div class="panel-subtitle">O dono vê quem está convertendo mais.</div>
+            </div>
+          </div>
+          <div class="table-card">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Consultor</th><th>Leads</th><th>Matrículas</th><th>Conversão</th><th>Receita</th></tr>
+                </thead>
+                <tbody id="reportCrmRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="users" class="section">
+      <div class="split">
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Gerenciar logins</div>
+              <div class="panel-subtitle">O ADM pode criar acessos antes da equipe começar e definir exatamente quais unidades cada login enxerga.</div>
+            </div>
+          </div>
+          <div id="userNotice" class="notice"></div>
+          <form id="userForm" class="form-grid" onsubmit="saveUser(event)">
+            <input type="hidden" id="userId" />
+            <label>Login
+              <input id="userLogin" placeholder="Ex.: comercial_ur3" required />
+            </label>
+            <label>Senha
+              <input id="userPassword" type="password" placeholder="Nova senha ou inicial" />
+            </label>
+            <label>Nome de exibição
+              <input id="userName" placeholder="Ex.: Equipe Comercial UR-3" required />
+            </label>
+            <label>Perfil
+              <select id="userRole" onchange="renderUserUnitChecks()">
+                <option value="operador">Operador</option>
+                <option value="admin">ADM</option>
+              </select>
+            </label>
+            <label>Status
+              <select id="userActive">
+                <option value="true">Ativo</option>
+                <option value="false">Inativo</option>
+              </select>
+            </label>
+            <div class="span-3">
+              <label>Unidades liberadas</label>
+              <div id="userUnitChecks" class="checkbox-grid"></div>
+            </div>
+            <div class="span-4 toolbar-actions">
+              <button class="primary" type="submit">Salvar usuário</button>
+              <button type="button" onclick="resetUserForm()">Limpar</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <div>
+              <div class="panel-title">Como usar</div>
+              <div class="panel-subtitle">Um login pode enxergar uma, duas ou várias unidades sem precisar ser ADM.</div>
+            </div>
+          </div>
+          <div class="list">
+            <div class="list-item"><div><b>ADM</b><small>Vê todas as unidades, metas, relatórios e cria novos logins.</small></div><span class="badge ok">Total</span></div>
+            <div class="list-item"><div><b>Operador</b><small>Vê somente as unidades marcadas pelo ADM e opera vendas/CRM dentro delas.</small></div><span class="badge blue">Limitado</span></div>
+            <div class="list-item"><div><b>Criação adiantada</b><small>O ADM já pode deixar os acessos prontos antes de entregar o sistema à equipe.</small></div><span class="badge warn">Prático</span></div>
+          </div>
+        </article>
+      </div>
+
+      <article class="panel" style="margin-top:14px">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">Usuários cadastrados</div>
+            <div class="panel-subtitle">A lista só aparece para o ADM.</div>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Nome</th><th>Login</th><th>Perfil</th><th>Unidades</th><th>Status</th><th>Ações</th></tr>
+              </thead>
+              <tbody id="usersRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </article>
+    </section>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const CONFIG = {
+      supabaseUrl: "",
+      supabaseAnonKey: ""
+    };
+    const SESSION_KEY = "metafit_session_token_v1";
+    const STORAGE_KEY = "metafit_state_v1";
+    const LEAD_STATUS = [
+      { id: "novo", label: "Novo", cls: "blue" },
+      { id: "contato", label: "Em contato", cls: "warn" },
+      { id: "agendado", label: "Agendado", cls: "violet" },
+      { id: "matriculado", label: "Matriculado", cls: "ok" },
+      { id: "perdido", label: "Perdido", cls: "bad" }
+    ];
+    const SALE_TYPES = {
+      matricula: "Matrícula nova",
+      renovacao: "Renovação",
+      recuperacao: "Recuperação",
+      extra: "Venda extra"
+    };
+
+    const seedState = {
+      units: [
+        { id: "ur3", name: "UR-3" },
+        { id: "ur2", name: "UR-2" },
+        { id: "jaboatao", name: "Jaboatão" },
+        { id: "ibura", name: "Ibura de Baixo" }
+      ],
+      consultants: [
+        { id: "joao", name: "João", unitId: "ur3", active: true },
+        { id: "maria", name: "Maria", unitId: "ur3", active: true },
+        { id: "pedro", name: "Pedro", unitId: "ur2", active: true },
+        { id: "kelly", name: "Kelly", unitId: "jaboatao", active: true },
+        { id: "rafa", name: "Rafa", unitId: "ibura", active: true }
+      ],
+      unitGoals: [
+        { id: "ug1", month: "2026-05", unitId: "ur3", target: 50000, matricula: 18000, renovacao: 16000, recuperacao: 8000, extra: 8000 },
+        { id: "ug2", month: "2026-05", unitId: "ur2", target: 35000, matricula: 12000, renovacao: 11000, recuperacao: 6000, extra: 6000 },
+        { id: "ug3", month: "2026-05", unitId: "jaboatao", target: 40000, matricula: 14000, renovacao: 12000, recuperacao: 7000, extra: 7000 },
+        { id: "ug4", month: "2026-05", unitId: "ibura", target: 30000, matricula: 10000, renovacao: 9000, recuperacao: 5000, extra: 6000 }
+      ],
+      consultantGoals: [
+        { id: "cg1", month: "2026-05", consultantId: "joao", target: 10000, commissionRate: 3 },
+        { id: "cg2", month: "2026-05", consultantId: "maria", target: 10000, commissionRate: 3 },
+        { id: "cg3", month: "2026-05", consultantId: "pedro", target: 10000, commissionRate: 3 },
+        { id: "cg4", month: "2026-05", consultantId: "kelly", target: 10000, commissionRate: 3 },
+        { id: "cg5", month: "2026-05", consultantId: "rafa", target: 10000, commissionRate: 3 }
+      ],
+      leads: [
+        { id: "l1", name: "Ana Lima", phone: "", source: "Instagram", createdAt: "2026-05-02", unitId: "ur3", consultantId: "joao", expectedValue: 4200, status: "matriculado", convertedAt: "2026-05-03", saleId: "s1" },
+        { id: "l2", name: "Bruno Silva", phone: "", source: "Indicação", createdAt: "2026-05-04", unitId: "ur3", consultantId: "maria", expectedValue: 4300, status: "matriculado", convertedAt: "2026-05-05", saleId: "s4" },
+        { id: "l3", name: "Carla Souza", phone: "", source: "WhatsApp", createdAt: "2026-05-08", unitId: "ur2", consultantId: "pedro", expectedValue: 1500, status: "contato", convertedAt: "", saleId: "" },
+        { id: "l4", name: "Diego Alves", phone: "", source: "Instagram", createdAt: "2026-05-10", unitId: "jaboatao", consultantId: "kelly", expectedValue: 2100, status: "agendado", convertedAt: "", saleId: "" },
+        { id: "l5", name: "Elisa Rocha", phone: "", source: "Google", createdAt: "2026-05-12", unitId: "ur3", consultantId: "joao", expectedValue: 1800, status: "novo", convertedAt: "", saleId: "" },
+        { id: "l6", name: "Fábio Costa", phone: "", source: "Facebook", createdAt: "2026-05-06", unitId: "ur2", consultantId: "pedro", expectedValue: 3000, status: "perdido", convertedAt: "", saleId: "" },
+        { id: "l7", name: "Gabi Moura", phone: "", source: "Indicação", createdAt: "2026-05-09", unitId: "ibura", consultantId: "rafa", expectedValue: 2600, status: "contato", convertedAt: "", saleId: "" }
+      ],
+      sales: [
+        { id: "s1", date: "2026-05-03", unitId: "ur3", consultantId: "joao", type: "matricula", amount: 4200, student: "Ana Lima", leadId: "l1", extraDetail: "", notes: "" },
+        { id: "s2", date: "2026-05-06", unitId: "ur3", consultantId: "joao", type: "renovacao", amount: 2600, student: "Cliente renovação 01", leadId: "", extraDetail: "", notes: "" },
+        { id: "s3", date: "2026-05-09", unitId: "ur3", consultantId: "joao", type: "extra", amount: 1400, student: "Cliente extra 01", leadId: "", extraDetail: "Plano anual", notes: "" },
+        { id: "s4", date: "2026-05-05", unitId: "ur3", consultantId: "maria", type: "matricula", amount: 4300, student: "Bruno Silva", leadId: "l2", extraDetail: "", notes: "" },
+        { id: "s5", date: "2026-05-07", unitId: "ur3", consultantId: "maria", type: "renovacao", amount: 4100, student: "Cliente renovação 02", leadId: "", extraDetail: "", notes: "" },
+        { id: "s6", date: "2026-05-14", unitId: "ur3", consultantId: "maria", type: "recuperacao", amount: 2900, student: "Cliente recuperado 01", leadId: "", extraDetail: "", notes: "" },
+        { id: "s7", date: "2026-05-08", unitId: "ur2", consultantId: "pedro", type: "matricula", amount: 2100, student: "Cliente 03", leadId: "", extraDetail: "", notes: "" },
+        { id: "s8", date: "2026-05-11", unitId: "ur2", consultantId: "pedro", type: "renovacao", amount: 2400, student: "Cliente 04", leadId: "", extraDetail: "", notes: "" },
+        { id: "s9", date: "2026-05-04", unitId: "jaboatao", consultantId: "kelly", type: "matricula", amount: 7200, student: "Cliente 05", leadId: "", extraDetail: "", notes: "" },
+        { id: "s10", date: "2026-05-13", unitId: "jaboatao", consultantId: "kelly", type: "renovacao", amount: 9800, student: "Cliente 06", leadId: "", extraDetail: "", notes: "" },
+        { id: "s11", date: "2026-05-15", unitId: "jaboatao", consultantId: "kelly", type: "recuperacao", amount: 5000, student: "Cliente 07", leadId: "", extraDetail: "", notes: "" },
+        { id: "s12", date: "2026-05-16", unitId: "jaboatao", consultantId: "kelly", type: "extra", amount: 8000, student: "Cliente 08", leadId: "", extraDetail: "Personal + avaliação", notes: "" },
+        { id: "s13", date: "2026-05-10", unitId: "ibura", consultantId: "rafa", type: "matricula", amount: 2600, student: "Cliente 09", leadId: "", extraDetail: "", notes: "" },
+        { id: "s14", date: "2026-05-14", unitId: "ibura", consultantId: "rafa", type: "renovacao", amount: 2400, student: "Cliente 10", leadId: "", extraDetail: "", notes: "" },
+        { id: "s15", date: "2026-05-17", unitId: "ibura", consultantId: "rafa", type: "extra", amount: 1500, student: "Cliente 11", leadId: "", extraDetail: "Avaliação + suplemento", notes: "" }
+      ]
+    };
+
+    let state = loadState();
+    let supabaseClient = null;
+    let currentUser = null;
+    let sessionToken = null;
+    let users = [];
+
+    const $ = (id) => document.getElementById(id);
+    const money = (value) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(value || 0));
+    const pct = (value) => `${Math.round(Number(value || 0))}%`;
+    const currentMonth = () => {
+      const now = new Date();
+      const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+      return local.toISOString().slice(0, 7);
+    };
+    const todayISO = () => {
+      const now = new Date();
+      const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+      return local.toISOString().slice(0, 10);
+    };
+    const uid = () => crypto.randomUUID ? crypto.randomUUID() : `id-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const clean = (value) => String(value ?? "").trim();
+    const toNumber = (value) => Number(String(value ?? "").replace(",", ".")) || 0;
+    const monthOf = (date) => String(date || "").slice(0, 7);
+
+    function loadState() {
+      try {
+        if (isConfigured()) return emptyState();
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        if (!saved) return cloneSeed();
+        return {
+          units: Array.isArray(saved.units) ? saved.units : cloneSeed().units,
+          consultants: Array.isArray(saved.consultants) ? saved.consultants : cloneSeed().consultants,
+          unitGoals: Array.isArray(saved.unitGoals) ? saved.unitGoals : [],
+          consultantGoals: Array.isArray(saved.consultantGoals) ? saved.consultantGoals : [],
+          leads: Array.isArray(saved.leads) ? saved.leads : [],
+          sales: Array.isArray(saved.sales) ? saved.sales : []
+        };
+      } catch {
+        return cloneSeed();
+      }
+    }
+
+    function cloneSeed() {
+      return JSON.parse(JSON.stringify(seedState));
+    }
+
+    function emptyState() {
+      return {
+        units: [],
+        consultants: [],
+        unitGoals: [],
+        consultantGoals: [],
+        leads: [],
+        sales: []
+      };
+    }
+
+    function persist() {
+      if (isConfigured()) return;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function isConfigured() {
+      return !!(String(CONFIG.supabaseUrl || "").trim() && String(CONFIG.supabaseAnonKey || "").trim());
+    }
+
+    function isRemoteMode() {
+      return isConfigured() && !!supabaseClient;
+    }
+
+    function isAdmin() {
+      return currentUser?.perfil === "admin";
+    }
+
+    function visibleUnits() {
+      if (!currentUser || isAdmin()) return state.units;
+      if (isRemoteMode()) return state.units;
+      const allowed = new Set(currentUser.allowedUnitIds || []);
+      return state.units.filter((unit) => allowed.has(unit.id));
+    }
+
+    function userCanSeeUnit(unitId) {
+      if (isRemoteMode() && !isAdmin()) return state.units.some((unit) => unit.id === unitId);
+      return isAdmin() || (currentUser?.allowedUnitIds || []).includes(unitId);
+    }
+
+    function visibleConsultants() {
+      return state.consultants.filter((consultant) => userCanSeeUnit(consultant.unitId));
+    }
+
+    function escapeHTML(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function dateBR(value) {
+      if (!value) return "—";
+      return new Intl.DateTimeFormat("pt-BR").format(new Date(`${value}T00:00:00`));
+    }
+
+    function monthBR(value) {
+      if (!value) return "—";
+      const [year, month] = value.split("-");
+      return new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" })
+        .format(new Date(Number(year), Number(month) - 1, 1));
+    }
+
+    function unitName(id) {
+      return state.units.find((unit) => unit.id === id)?.name || "—";
+    }
+
+    function consultantName(id) {
+      return state.consultants.find((consultant) => consultant.id === id)?.name || "—";
+    }
+
+    function consultantUnitId(id) {
+      return state.consultants.find((consultant) => consultant.id === id)?.unitId || "";
+    }
+
+    function selectedMonth() {
+      return $("filterMonth").value || currentMonth();
+    }
+
+    function selectedUnitId() {
+      return $("filterUnit").value || "";
+    }
+
+    function selectedConsultantId() {
+      return $("filterConsultant").value || "";
+    }
+
+    function activeConsultants() {
+      return visibleConsultants().filter((consultant) => consultant.active);
+    }
+
+    function scopedConsultantId() {
+      if ($("viewMode").value === "consultant") {
+        return selectedConsultantId() || activeConsultants()[0]?.id || "";
+      }
+      return selectedConsultantId();
+    }
+
+    function allowedConsultants() {
+      const unitId = selectedUnitId();
+      return activeConsultants().filter((consultant) => !unitId || consultant.unitId === unitId);
+    }
+
+    function filteredSales() {
+      const month = selectedMonth();
+      const unitId = selectedUnitId();
+      const consultantId = scopedConsultantId();
+      return state.sales.filter((sale) =>
+        monthOf(sale.date) === month &&
+        (!unitId || sale.unitId === unitId) &&
+        (!consultantId || sale.consultantId === consultantId)
+      );
+    }
+
+    function filteredLeads() {
+      const month = selectedMonth();
+      const unitId = selectedUnitId();
+      const consultantId = scopedConsultantId();
+      return state.leads.filter((lead) =>
+        monthOf(lead.createdAt) === month &&
+        (!unitId || lead.unitId === unitId) &&
+        (!consultantId || lead.consultantId === consultantId)
+      );
+    }
+
+    function unitPerformance() {
+      const month = selectedMonth();
+      const unitId = selectedUnitId();
+      const consultantId = scopedConsultantId();
+      const scopedUnits = visibleUnits().filter((unit) =>
+        (!unitId || unit.id === unitId) &&
+        (!consultantId || unit.id === consultantUnitId(consultantId))
+      );
+
+      return scopedUnits.map((unit) => {
+        const goal = state.unitGoals.find((item) => item.month === month && item.unitId === unit.id);
+        const unitSales = state.sales.filter((sale) =>
+          monthOf(sale.date) === month &&
+          sale.unitId === unit.id &&
+          (!consultantId || sale.consultantId === consultantId)
+        );
+        const realized = sum(unitSales.map((sale) => sale.amount));
+        const target = goal?.target || 0;
+        return {
+          unit,
+          goal,
+          target,
+          realized,
+          missing: Math.max(target - realized, 0),
+          progress: target ? Math.min((realized / target) * 100, 999) : 0
+        };
+      });
+    }
+
+    function consultantPerformance() {
+      const month = selectedMonth();
+      const unitId = selectedUnitId();
+      const consultantId = scopedConsultantId();
+      return activeConsultants()
+        .filter((consultant) =>
+          (!unitId || consultant.unitId === unitId) &&
+          (!consultantId || consultant.id === consultantId)
+        )
+        .map((consultant) => {
+          const goal = state.consultantGoals.find((item) => item.month === month && item.consultantId === consultant.id);
+          const sold = sum(state.sales
+            .filter((sale) => monthOf(sale.date) === month && sale.consultantId === consultant.id)
+            .map((sale) => sale.amount));
+          const target = goal?.target || 0;
+          const progress = target ? (sold / target) * 100 : 0;
+          const hit = target > 0 && sold >= target;
+          return {
+            consultant,
+            goal,
+            target,
+            sold,
+            missing: Math.max(target - sold, 0),
+            progress,
+            commission: hit ? sold * ((goal?.commissionRate || 0) / 100) : 0,
+            status: !target ? "Sem meta" : hit ? "Bateu meta" : progress >= 80 ? "Quase lá" : "Abaixo"
+          };
+        })
+        .sort((a, b) => b.progress - a.progress || b.sold - a.sold || a.consultant.name.localeCompare(b.consultant.name, "pt-BR"));
+    }
+
+    function crmPerformance() {
+      const month = selectedMonth();
+      const unitId = selectedUnitId();
+      const consultantId = scopedConsultantId();
+      return activeConsultants()
+        .filter((consultant) =>
+          (!unitId || consultant.unitId === unitId) &&
+          (!consultantId || consultant.id === consultantId)
+        )
+        .map((consultant) => {
+          const leads = state.leads.filter((lead) =>
+            monthOf(lead.createdAt) === month &&
+            lead.consultantId === consultant.id
+          );
+          const converted = leads.filter((lead) => lead.status === "matriculado");
+          const revenue = sum(converted.map((lead) => state.sales.find((sale) => sale.id === lead.saleId)?.amount || 0));
+          return {
+            consultant,
+            leads: leads.length,
+            converted: converted.length,
+            conversion: leads.length ? (converted.length / leads.length) * 100 : 0,
+            revenue
+          };
+        })
+        .sort((a, b) => b.conversion - a.conversion || b.revenue - a.revenue);
+    }
+
+    function categoryPerformance() {
+      const month = selectedMonth();
+      const unitId = selectedUnitId();
+      const consultantId = scopedConsultantId();
+      const relevantUnitGoals = state.unitGoals.filter((goal) =>
+        goal.month === month &&
+        (!unitId || goal.unitId === unitId) &&
+        (!consultantId || goal.unitId === consultantUnitId(consultantId))
+      );
+      const sales = filteredSales();
+
+      return Object.keys(SALE_TYPES).map((type) => {
+        const target = sum(relevantUnitGoals.map((goal) => goal[type] || 0));
+        const realized = sum(sales.filter((sale) => sale.type === type).map((sale) => sale.amount));
+        return {
+          type,
+          label: SALE_TYPES[type],
+          target,
+          realized,
+          missing: Math.max(target - realized, 0),
+          progress: target ? Math.min((realized / target) * 100, 999) : 0,
+          count: sales.filter((sale) => sale.type === type).length
+        };
+      });
+    }
+
+    function sum(values) {
+      return values.reduce((total, value) => total + Number(value || 0), 0);
+    }
+
+    function topScope() {
+      const consultantId = scopedConsultantId();
+      if (consultantId) {
+        const perf = consultantPerformance()[0];
+        return {
+          label: consultantName(consultantId),
+          target: perf?.target || 0,
+          realized: perf?.sold || 0
+        };
+      }
+
+      const units = unitPerformance();
+      return {
+        label: selectedUnitId() ? unitName(selectedUnitId()) : "Todas as unidades",
+        target: sum(units.map((item) => item.target)),
+        realized: sum(units.map((item) => item.realized))
+      };
+    }
+
+    function overallLeadStats() {
+      const leads = filteredLeads();
+      const converted = leads.filter((lead) => lead.status === "matriculado");
+      return {
+        total: leads.length,
+        converted: converted.length,
+        conversion: leads.length ? (converted.length / leads.length) * 100 : 0
+      };
+    }
+
+    function statusClass(progress, hasGoal = true) {
+      if (!hasGoal) return "blue";
+      if (progress >= 100) return "ok";
+      if (progress >= 80) return "warn";
+      return "bad";
+    }
+
+    function statusLabel(progress, hasGoal = true) {
+      if (!hasGoal) return "Sem meta";
+      if (progress >= 100) return "Bateu meta";
+      if (progress >= 80) return "Quase lá";
+      return "Abaixo";
+    }
+
+    function renderHeroSignals() {
+      const units = unitPerformance();
+      const consultants = consultantPerformance();
+      const scope = topScope();
+      const missing = Math.max(scope.target - scope.realized, 0);
+      const closest = consultants
+        .filter((item) => item.target > 0 && item.sold < item.target)
+        .sort((a, b) => a.missing - b.missing)[0];
+      const strongest = consultants[0];
+
+      $("heroSignals").innerHTML = `
+        <div class="signal">
+          <small>Alerta do recorte</small>
+          <strong>${missing ? `Faltam ${money(missing)}` : "Meta batida"}</strong>
+          <small>${missing ? `para ${scope.label} fechar ${monthBR(selectedMonth())}.` : `${scope.label} já passou da linha de chegada.`}</small>
+        </div>
+        <div class="signal">
+          <small>Consultor mais perto da meta</small>
+          <strong>${closest ? escapeHTML(closest.consultant.name) : strongest ? escapeHTML(strongest.consultant.name) : "—"}</strong>
+          <small>${closest ? `faltam ${money(closest.missing)}` : strongest ? `${pct(strongest.progress)} do objetivo` : "Cadastre metas para começar."}</small>
+        </div>
+        <div class="signal">
+          <small>Unidades com meta batida</small>
+          <strong>${units.filter((item) => item.target > 0 && item.realized >= item.target).length}/${units.length}</strong>
+          <small>comparativo mensal automático</small>
+        </div>
+      `;
+    }
+
+    function renderMetrics() {
+      const scope = topScope();
+      const leads = overallLeadStats();
+      const consultants = consultantPerformance();
+      const sales = filteredSales();
+      const commission = sum(consultants.map((item) => item.commission));
+      const newEnrollments = sales.filter((sale) => sale.type === "matricula").length;
+      const progress = scope.target ? (scope.realized / scope.target) * 100 : 0;
+      const missing = Math.max(scope.target - scope.realized, 0);
+
+      $("metrics").innerHTML = `
+        <article class="metric-card">
+          <div class="label">Meta do recorte</div>
+          <div class="value">${money(scope.target)}</div>
+          <div class="sub">${scope.label}</div>
+        </article>
+        <article class="metric-card">
+          <div class="label">Realizado</div>
+          <div class="value">${money(scope.realized)}</div>
+          <div class="sub">${sales.length} venda(s) lançada(s)</div>
+        </article>
+        <article class="metric-card">
+          <div class="label">Falta</div>
+          <div class="value">${money(missing)}</div>
+          <div class="sub">para bater a meta</div>
+        </article>
+        <article class="metric-card">
+          <div class="label">Progresso</div>
+          <div class="value">${pct(progress)}</div>
+          <div class="sub">${statusLabel(progress, scope.target > 0)}</div>
+        </article>
+        <article class="metric-card">
+          <div class="label">Comissão liberada</div>
+          <div class="value">${money(commission)}</div>
+          <div class="sub">somente metas batidas</div>
+        </article>
+        <article class="metric-card">
+          <div class="label">CRM</div>
+          <div class="value">${pct(leads.conversion)}</div>
+          <div class="sub">${newEnrollments} matrícula(s) • ${leads.converted}/${leads.total} leads</div>
+        </article>
+      `;
+    }
+
+    function renderDashboard() {
+      if ($("viewMode").value === "consultant") {
+        renderConsultantDashboard();
+      } else {
+        renderOwnerDashboard();
+      }
+    }
+
+    function renderOwnerDashboard() {
+      const units = unitPerformance();
+      const consultants = consultantPerformance();
+      const categories = categoryPerformance();
+      const crm = crmPerformance();
+      const alerts = [
+        ...units
+          .filter((item) => item.target > 0 && item.realized < item.target)
+          .map((item) => `${item.unit.name}: faltam ${money(item.missing)} para bater a meta.`),
+        ...consultants
+          .filter((item) => item.target > 0 && item.sold < item.target)
+          .sort((a, b) => a.missing - b.missing)
+          .slice(0, 3)
+          .map((item) => `${item.consultant.name}: faltam ${money(item.missing)}.`)
+      ].slice(0, 5);
+
+      $("dashboardContent").innerHTML = `
+        <div class="dashboard-grid">
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="panel-title">Comparativo entre unidades</div>
+                <div class="panel-subtitle">Meta, realizado e progresso do mês.</div>
+              </div>
+            </div>
+            <div class="table-card">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>Unidade</th><th>Meta do mês</th><th>Realizado</th><th>Falta</th><th>Progresso</th></tr>
+                  </thead>
+                  <tbody>
+                    ${units.length ? units.map((item) => `
+                      <tr>
+                        <td><b>${escapeHTML(item.unit.name)}</b></td>
+                        <td>${money(item.target)}</td>
+                        <td>${money(item.realized)}</td>
+                        <td>${money(item.missing)}</td>
+                        <td class="progress">
+                          <span class="status ${statusClass(item.progress, item.target > 0)}">${statusLabel(item.progress, item.target > 0)}</span>
+                          <div class="bar"><span style="width:${Math.min(item.progress, 100)}%"></span></div>
+                          <small>${pct(item.progress)}</small>
+                        </td>
+                      </tr>
+                    `).join("") : `<tr><td colspan="5" class="empty">Nenhuma unidade nesse recorte.</td></tr>`}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="panel-title">Alertas automáticos</div>
+                <div class="panel-subtitle">O sistema já aponta onde falta empurrão.</div>
+              </div>
+            </div>
+            <div class="list">
+              ${alerts.length ? alerts.map((text) => `
+                <div class="list-item">
+                  <div><b>${escapeHTML(text)}</b></div>
+                  <span class="badge warn">Atenção</span>
+                </div>
+              `).join("") : `<div class="empty">Nenhuma meta em risco no recorte atual.</div>`}
+            </div>
+          </article>
+        </div>
+
+        <div class="split" style="margin-top:14px">
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="panel-title">Ranking dos funcionários</div>
+                <div class="panel-subtitle">Ordenado por progresso e venda.</div>
+              </div>
+            </div>
+            <div class="table-card">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>#</th><th>Consultor</th><th>Meta</th><th>Vendeu</th><th>Falta</th><th>Status</th><th>Comissão</th></tr>
+                  </thead>
+                  <tbody>
+                    ${consultants.length ? consultants.map((item, index) => `
+                      <tr>
+                        <td><b>${index + 1}</b></td>
+                        <td>${escapeHTML(item.consultant.name)}<br><small>${escapeHTML(unitName(item.consultant.unitId))}</small></td>
+                        <td>${money(item.target)}</td>
+                        <td>${money(item.sold)}</td>
+                        <td>${money(item.missing)}</td>
+                        <td><span class="status ${statusClass(item.progress, item.target > 0)}">${escapeHTML(item.status)}</span></td>
+                        <td>${money(item.commission)}</td>
+                      </tr>
+                    `).join("") : `<tr><td colspan="7" class="empty">Nenhum consultor no recorte atual.</td></tr>`}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="panel-title">Meta por frente</div>
+                <div class="panel-subtitle">Matrículas, renovações, recuperação e extras.</div>
+              </div>
+            </div>
+            <div class="category-grid">
+              ${categories.map((item) => `
+                <div class="mini-card">
+                  <small>${escapeHTML(item.label)}</small>
+                  <b>${money(item.realized)}</b>
+                  <small>${item.count} venda(s) • meta ${money(item.target)}</small>
+                  <div class="bar"><span style="width:${Math.min(item.progress, 100)}%"></span></div>
+                  <small>${pct(item.progress)} • faltam ${money(item.missing)}</small>
+                </div>
+              `).join("")}
+            </div>
+          </article>
+        </div>
+
+        <div class="split" style="margin-top:14px">
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="panel-title">Conversão por consultor</div>
+                <div class="panel-subtitle">Aqui o CRM mostra quem transforma oportunidade em matrícula.</div>
+              </div>
+            </div>
+            <div class="table-card">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>Consultor</th><th>Leads</th><th>Matrículas</th><th>Conversão</th><th>Receita</th></tr>
+                  </thead>
+                  <tbody>
+                    ${crm.length ? crm.map((item) => `
+                      <tr>
+                        <td>${escapeHTML(item.consultant.name)}</td>
+                        <td>${item.leads}</td>
+                        <td>${item.converted}</td>
+                        <td>${pct(item.conversion)}</td>
+                        <td>${money(item.revenue)}</td>
+                      </tr>
+                    `).join("") : `<tr><td colspan="5" class="empty">Nenhum dado de CRM ainda.</td></tr>`}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="panel-title">Leitura estratégica</div>
+                <div class="panel-subtitle">O que merece atenção primeiro.</div>
+              </div>
+            </div>
+            <div class="list">
+              ${buildStrategicRead().map((item) => `
+                <div class="list-item">
+                  <div>
+                    <b>${escapeHTML(item.title)}</b>
+                    <small>${escapeHTML(item.detail)}</small>
+                  </div>
+                  <span class="badge ${item.cls}">${escapeHTML(item.tag)}</span>
+                </div>
+              `).join("")}
+            </div>
+          </article>
+        </div>
+      `;
+    }
+
+    function buildStrategicRead() {
+      const units = unitPerformance();
+      const consultants = consultantPerformance();
+      const crm = crmPerformance();
+      const weakestUnit = [...units].sort((a, b) => a.progress - b.progress)[0];
+      const bestConsultant = consultants[0];
+      const bestConverter = crm[0];
+      const category = [...categoryPerformance()].sort((a, b) => a.progress - b.progress)[0];
+
+      return [
+        weakestUnit ? {
+          title: `${weakestUnit.unit.name} está em ${pct(weakestUnit.progress)}`,
+          detail: weakestUnit.target ? `Faltam ${money(weakestUnit.missing)} para fechar a meta.` : "Meta ainda não cadastrada.",
+          tag: "Unidade",
+          cls: weakestUnit.progress >= 100 ? "ok" : weakestUnit.progress >= 80 ? "warn" : "bad"
+        } : null,
+        bestConsultant ? {
+          title: `${bestConsultant.consultant.name} lidera o ranking`,
+          detail: `${money(bestConsultant.sold)} vendidos e ${pct(bestConsultant.progress)} da meta.`,
+          tag: "Ranking",
+          cls: "ok"
+        } : null,
+        bestConverter ? {
+          title: `${bestConverter.consultant.name} converte ${pct(bestConverter.conversion)}`,
+          detail: `${bestConverter.converted} matrícula(s) a partir de ${bestConverter.leads} lead(s).`,
+          tag: "CRM",
+          cls: bestConverter.conversion >= 50 ? "ok" : "warn"
+        } : null,
+        category ? {
+          title: `${category.label} está em ${pct(category.progress)}`,
+          detail: `Faltam ${money(category.missing)} nessa frente.`,
+          tag: "Mix",
+          cls: category.progress >= 100 ? "ok" : category.progress >= 80 ? "warn" : "bad"
+        } : null
+      ].filter(Boolean);
+    }
+
+    function renderConsultantDashboard() {
+      const consultantId = scopedConsultantId();
+      const perf = consultantPerformance()[0];
+      const leads = filteredLeads();
+      const sales = filteredSales();
+      const crm = overallLeadStats();
+      const category = categoryPerformance();
+
+      if (!consultantId || !perf) {
+        $("dashboardContent").innerHTML = `<div class="empty">Cadastre um consultor ativo para abrir o painel individual.</div>`;
+        return;
+      }
+
+      $("dashboardContent").innerHTML = `
+        <div class="dashboard-grid">
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="panel-title">Painel de ${escapeHTML(perf.consultant.name)}</div>
+                <div class="panel-subtitle">${escapeHTML(unitName(perf.consultant.unitId))} • ${monthBR(selectedMonth())}</div>
+              </div>
+              <span class="status ${statusClass(perf.progress, perf.target > 0)}">${escapeHTML(perf.status)}</span>
+            </div>
+            <div class="mini-grid">
+              <div class="mini-card">
+                <small>Meta</small>
+                <b>${money(perf.target)}</b>
+              </div>
+              <div class="mini-card">
+                <small>Vendeu</small>
+                <b>${money(perf.sold)}</b>
+              </div>
+              <div class="mini-card">
+                <small>Falta</small>
+                <b>${money(perf.missing)}</b>
+              </div>
+              <div class="mini-card">
+                <small>Comissão liberada</small>
+                <b>${money(perf.commission)}</b>
+              </div>
+            </div>
+            <div class="bar" style="margin-top:14px"><span style="width:${Math.min(perf.progress, 100)}%"></span></div>
+            <small>${pct(perf.progress)} da meta individual</small>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="panel-title">CRM pessoal</div>
+                <div class="panel-subtitle">A fila que ainda pode virar meta.</div>
+              </div>
+            </div>
+            <div class="mini-grid">
+              <div class="mini-card"><small>Leads</small><b>${leads.length}</b></div>
+              <div class="mini-card"><small>Matrículas</small><b>${crm.converted}</b></div>
+              <div class="mini-card"><small>Conversão</small><b>${pct(crm.conversion)}</b></div>
+              <div class="mini-card"><small>Vendas</small><b>${sales.length}</b></div>
+            </div>
+          </article>
+        </div>
+
+        <div class="split" style="margin-top:14px">
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="panel-title">Produção por tipo</div>
+                <div class="panel-subtitle">De onde veio sua receita neste mês.</div>
+              </div>
+            </div>
+            <div class="category-grid">
+              ${category.map((item) => `
+                <div class="mini-card">
+                  <small>${escapeHTML(item.label)}</small>
+                  <b>${money(item.realized)}</b>
+                  <small>${item.count} venda(s)</small>
+                </div>
+              `).join("")}
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head">
+              <div>
+                <div class="panel-title">Próximos movimentos</div>
+                <div class="panel-subtitle">O que está mais perto de virar faturamento.</div>
+              </div>
+            </div>
+            <div class="list">
+              ${leads
+                .filter((lead) => lead.status !== "matriculado" && lead.status !== "perdido")
+                .sort((a, b) => (b.expectedValue || 0) - (a.expectedValue || 0))
+                .slice(0, 4)
+                .map((lead) => `
+                  <div class="list-item">
+                    <div>
+                      <b>${escapeHTML(lead.name)}</b>
+                      <small>${escapeHTML(leadStatusInfo(lead.status).label)} • potencial ${money(lead.expectedValue)}</small>
+                    </div>
+                    <span class="badge blue">${escapeHTML(lead.source || "Lead")}</span>
+                  </div>
+                `).join("") || `<div class="empty">Sem leads pendentes neste recorte.</div>`}
+            </div>
+          </article>
+        </div>
+      `;
+    }
+
+    function renderSalesQuickRead() {
+      const sales = filteredSales();
+      const totals = categoryPerformance();
+      $("salesQuickRead").innerHTML = `
+        <div class="mini-card">
+          <small>Total vendido</small>
+          <b>${money(sum(sales.map((sale) => sale.amount)))}</b>
+        </div>
+        <div class="mini-card">
+          <small>Ticket médio</small>
+          <b>${money(sales.length ? sum(sales.map((sale) => sale.amount)) / sales.length : 0)}</b>
+        </div>
+        ${totals.map((item) => `
+          <div class="mini-card">
+            <small>${escapeHTML(item.label)}</small>
+            <b>${money(item.realized)}</b>
+            <small>${item.count} venda(s)</small>
+          </div>
+        `).join("")}
+      `;
+    }
+
+    function renderCrmQuickRead() {
+      const leads = filteredLeads();
+      const byStatus = Object.fromEntries(LEAD_STATUS.map((status) => [status.id, leads.filter((lead) => lead.status === status.id).length]));
+      const converted = byStatus.matriculado || 0;
+      $("crmQuickRead").innerHTML = `
+        <div class="mini-card"><small>Leads do mês</small><b>${leads.length}</b></div>
+        <div class="mini-card"><small>Conversão</small><b>${pct(leads.length ? (converted / leads.length) * 100 : 0)}</b></div>
+        ${LEAD_STATUS.map((status) => `
+          <div class="mini-card">
+            <small>${escapeHTML(status.label)}</small>
+            <b>${byStatus[status.id] || 0}</b>
+          </div>
+        `).join("")}
+      `;
+    }
+
+    function renderSalesRows() {
+      const sales = filteredSales().sort((a, b) => b.date.localeCompare(a.date));
+      $("salesRows").innerHTML = sales.length ? sales.map((sale) => `
+        <tr>
+          <td>${dateBR(sale.date)}</td>
+          <td><b>${escapeHTML(sale.student)}</b>${sale.extraDetail ? `<br><small>${escapeHTML(sale.extraDetail)}</small>` : ""}</td>
+          <td>${escapeHTML(unitName(sale.unitId))}</td>
+          <td>${escapeHTML(consultantName(sale.consultantId))}</td>
+          <td>${escapeHTML(SALE_TYPES[sale.type])}</td>
+          <td>${money(sale.amount)}</td>
+          <td>${sale.leadId ? escapeHTML(state.leads.find((lead) => lead.id === sale.leadId)?.name || "—") : "—"}</td>
+          <td>
+            <div class="mini-actions">
+              <button onclick="editSale('${sale.id}')">Editar</button>
+              <button class="danger" onclick="deleteSale('${sale.id}')">Excluir</button>
+            </div>
+          </td>
+        </tr>
+      `).join("") : `<tr><td colspan="8" class="empty">Nenhuma venda nesse recorte.</td></tr>`;
+    }
+
+    function renderCrmBoard() {
+      const leads = filteredLeads();
+      $("crmBoard").innerHTML = LEAD_STATUS.map((status) => {
+        const items = leads.filter((lead) => lead.status === status.id);
+        return `
+          <section class="board-column">
+            <div class="board-head">
+              <b>${escapeHTML(status.label)}</b>
+              <span class="badge ${status.cls}">${items.length}</span>
+            </div>
+            <div class="lead-list">
+              ${items.length ? items.map((lead) => `
+                <article class="lead-card">
+                  <div class="lead-top">
+                    <div>
+                      <div class="lead-name">${escapeHTML(lead.name)}</div>
+                      <div class="tiny">${escapeHTML(consultantName(lead.consultantId))} • ${escapeHTML(unitName(lead.unitId))}</div>
+                    </div>
+                    <span class="badge ${status.cls}">${escapeHTML(status.label)}</span>
+                  </div>
+                  <div class="tiny">
+                    ${escapeHTML(lead.source || "Sem origem")} • entrou em ${dateBR(lead.createdAt)}<br>
+                    Potencial ${money(lead.expectedValue)}
+                  </div>
+                  <div class="mini-actions">
+                    <button onclick="editLead('${lead.id}')">Editar</button>
+                    ${lead.status !== "matriculado" ? `<button onclick="advanceLead('${lead.id}')">Avançar</button>` : ""}
+                    ${lead.status !== "matriculado" ? `<button class="primary" onclick="convertLead('${lead.id}')">Converter</button>` : ""}
+                    <button class="danger" onclick="deleteLead('${lead.id}')">Excluir</button>
+                  </div>
+                </article>
+              `).join("") : `<div class="empty">Nenhum lead aqui.</div>`}
+            </div>
+          </section>
+        `;
+      }).join("");
+    }
+
+    function leadStatusInfo(id) {
+      return LEAD_STATUS.find((status) => status.id === id) || LEAD_STATUS[0];
+    }
+
+    function renderReports() {
+      const scope = topScope();
+      const units = unitPerformance();
+      const consultants = consultantPerformance();
+      const leads = filteredLeads();
+      const sales = filteredSales();
+      const crm = crmPerformance();
+      const commission = sum(consultants.map((item) => item.commission));
+      const conversion = leads.length ? leads.filter((lead) => lead.status === "matriculado").length / leads.length * 100 : 0;
+
+      $("reportSummary").innerHTML = `
+        <article class="panel">
+          <div class="panel-title">Resumo do recorte</div>
+          <div class="mini-grid" style="margin-top:12px">
+            <div class="mini-card"><small>Meta</small><b>${money(scope.target)}</b></div>
+            <div class="mini-card"><small>Realizado</small><b>${money(scope.realized)}</b></div>
+            <div class="mini-card"><small>Comissão</small><b>${money(commission)}</b></div>
+            <div class="mini-card"><small>Conversão CRM</small><b>${pct(conversion)}</b></div>
+          </div>
+        </article>
+        <article class="panel">
+          <div class="panel-title">Filtros aplicados</div>
+          <div class="list" style="margin-top:12px">
+            <div class="list-item"><div><b>Mês</b><small>${escapeHTML(monthBR(selectedMonth()))}</small></div></div>
+            <div class="list-item"><div><b>Unidade</b><small>${escapeHTML(selectedUnitId() ? unitName(selectedUnitId()) : "Todas")}</small></div></div>
+            <div class="list-item"><div><b>Consultor</b><small>${escapeHTML(scopedConsultantId() ? consultantName(scopedConsultantId()) : "Todos")}</small></div></div>
+          </div>
+        </article>
+      `;
+
+      $("reportUnitRows").innerHTML = units.length ? units.map((item) => `
+        <tr>
+          <td>${escapeHTML(item.unit.name)}</td>
+          <td>${money(item.target)}</td>
+          <td>${money(item.realized)}</td>
+          <td>${money(item.missing)}</td>
+          <td>${pct(item.progress)}</td>
+        </tr>
+      `).join("") : `<tr><td colspan="5" class="empty">Nenhuma unidade nesse recorte.</td></tr>`;
+
+      $("reportConsultantRows").innerHTML = consultants.length ? consultants.map((item) => `
+        <tr>
+          <td>${escapeHTML(item.consultant.name)}</td>
+          <td>${money(item.target)}</td>
+          <td>${money(item.sold)}</td>
+          <td>${escapeHTML(item.status)}</td>
+          <td>${money(item.commission)}</td>
+        </tr>
+      `).join("") : `<tr><td colspan="5" class="empty">Nenhum consultor nesse recorte.</td></tr>`;
+
+      $("reportSalesRows").innerHTML = sales.length ? sales
+        .sort((a, b) => b.date.localeCompare(a.date))
+        .map((sale) => `
+          <tr>
+            <td>${dateBR(sale.date)}</td>
+            <td>${escapeHTML(sale.student)}</td>
+            <td>${escapeHTML(consultantName(sale.consultantId))}</td>
+            <td>${escapeHTML(SALE_TYPES[sale.type])}</td>
+            <td>${money(sale.amount)}</td>
+          </tr>
+        `).join("") : `<tr><td colspan="5" class="empty">Nenhuma venda nesse recorte.</td></tr>`;
+
+      $("reportCrmRows").innerHTML = crm.length ? crm.map((item) => `
+        <tr>
+          <td>${escapeHTML(item.consultant.name)}</td>
+          <td>${item.leads}</td>
+          <td>${item.converted}</td>
+          <td>${pct(item.conversion)}</td>
+          <td>${money(item.revenue)}</td>
+        </tr>
+      `).join("") : `<tr><td colspan="5" class="empty">Nenhum dado de CRM nesse recorte.</td></tr>`;
+    }
+
+    function renderGoalTables() {
+      $("unitGoalsRows").innerHTML = state.unitGoals
+        .slice()
+        .sort((a, b) => b.month.localeCompare(a.month) || unitName(a.unitId).localeCompare(unitName(b.unitId), "pt-BR"))
+        .map((goal) => `
+          <tr>
+            <td>${escapeHTML(monthBR(goal.month))}</td>
+            <td>${escapeHTML(unitName(goal.unitId))}</td>
+            <td>${money(goal.target)}</td>
+            <td>${money(goal.matricula)}</td>
+            <td>${money(goal.renovacao)}</td>
+            <td>${money(goal.recuperacao)}</td>
+            <td>${money(goal.extra)}</td>
+            <td>
+              <div class="mini-actions">
+                <button onclick="editUnitGoal('${goal.id}')">Editar</button>
+                <button class="danger" onclick="deleteUnitGoal('${goal.id}')">Excluir</button>
+              </div>
+            </td>
+          </tr>
+        `).join("") || `<tr><td colspan="8" class="empty">Nenhuma meta de unidade cadastrada.</td></tr>`;
+
+      $("consultantGoalsRows").innerHTML = state.consultantGoals
+        .slice()
+        .sort((a, b) => b.month.localeCompare(a.month) || consultantName(a.consultantId).localeCompare(consultantName(b.consultantId), "pt-BR"))
+        .map((goal) => `
+          <tr>
+            <td>${escapeHTML(monthBR(goal.month))}</td>
+            <td>${escapeHTML(consultantName(goal.consultantId))}</td>
+            <td>${money(goal.target)}</td>
+            <td>${goal.commissionRate}%</td>
+            <td>
+              <div class="mini-actions">
+                <button onclick="editConsultantGoal('${goal.id}')">Editar</button>
+                <button class="danger" onclick="deleteConsultantGoal('${goal.id}')">Excluir</button>
+              </div>
+            </td>
+          </tr>
+        `).join("") || `<tr><td colspan="5" class="empty">Nenhuma meta de consultor cadastrada.</td></tr>`;
+    }
+
+    function renderStructureTables() {
+      $("unitsRows").innerHTML = visibleUnits().map((unit) => `
+        <tr>
+          <td><b>${escapeHTML(unit.name)}</b></td>
+          <td>${state.consultants.filter((consultant) => consultant.unitId === unit.id).length}</td>
+          <td>
+            <div class="mini-actions">
+              <button onclick="editUnit('${unit.id}')">Editar</button>
+              <button class="danger" onclick="deleteUnit('${unit.id}')">Excluir</button>
+            </div>
+          </td>
+        </tr>
+      `).join("") || `<tr><td colspan="3" class="empty">Nenhuma unidade cadastrada.</td></tr>`;
+
+      $("consultantsRows").innerHTML = visibleConsultants().map((consultant) => `
+        <tr>
+          <td><b>${escapeHTML(consultant.name)}</b></td>
+          <td>${escapeHTML(unitName(consultant.unitId))}</td>
+          <td><span class="status ${consultant.active ? "ok" : "bad"}">${consultant.active ? "Ativo" : "Inativo"}</span></td>
+          <td>
+            <div class="mini-actions">
+              <button onclick="editConsultant('${consultant.id}')">Editar</button>
+              <button class="danger" onclick="deleteConsultant('${consultant.id}')">Excluir</button>
+            </div>
+          </td>
+        </tr>
+      `).join("") || `<tr><td colspan="4" class="empty">Nenhum consultor cadastrado.</td></tr>`;
+    }
+
+    function hydrateSelect(select, items, placeholder, selected = "") {
+      select.innerHTML = `
+        ${placeholder !== null ? `<option value="">${escapeHTML(placeholder)}</option>` : ""}
+        ${items.map((item) => `<option value="${escapeHTML(item.value)}">${escapeHTML(item.label)}</option>`).join("")}
+      `;
+      select.value = items.some((item) => item.value === selected) ? selected : "";
+    }
+
+    function refreshSelects() {
+      const unitItems = visibleUnits().map((unit) => ({ value: unit.id, label: unit.name }));
+      hydrateSelect($("filterUnit"), unitItems, "Todas as unidades", $("filterUnit").value);
+      hydrateSelect($("unitGoalUnit"), unitItems, "Selecione", $("unitGoalUnit").value);
+      hydrateSelect($("consultantUnit"), unitItems, "Selecione", $("consultantUnit").value);
+      hydrateSelect($("saleUnit"), unitItems, "Selecione", $("saleUnit").value);
+      hydrateSelect($("leadUnit"), unitItems, "Selecione", $("leadUnit").value);
+
+      hydrateFilterConsultants();
+
+      const consultantItems = visibleConsultants().map((consultant) => ({ value: consultant.id, label: `${consultant.name} • ${unitName(consultant.unitId)}` }));
+      hydrateSelect($("consultantGoalConsultant"), consultantItems, "Selecione", $("consultantGoalConsultant").value);
+      hydrateSaleConsultants();
+      hydrateLeadConsultants();
+      hydrateSaleLeads();
+    }
+
+    function hydrateFilterConsultants() {
+      const current = $("filterConsultant").value;
+      const items = allowedConsultants().map((consultant) => ({
+        value: consultant.id,
+        label: `${consultant.name} • ${unitName(consultant.unitId)}`
+      }));
+      hydrateSelect($("filterConsultant"), items, "Todos os consultores", current);
+    }
+
+    function hydrateSaleConsultants() {
+      const unitId = $("saleUnit").value;
+      const current = $("saleConsultant").value;
+      const items = activeConsultants()
+        .filter((consultant) => !unitId || consultant.unitId === unitId)
+        .map((consultant) => ({ value: consultant.id, label: consultant.name }));
+      hydrateSelect($("saleConsultant"), items, "Selecione", current);
+    }
+
+    function hydrateLeadConsultants() {
+      const unitId = $("leadUnit").value;
+      const current = $("leadConsultant").value;
+      const items = activeConsultants()
+        .filter((consultant) => !unitId || consultant.unitId === unitId)
+        .map((consultant) => ({ value: consultant.id, label: consultant.name }));
+      hydrateSelect($("leadConsultant"), items, "Selecione", current);
+    }
+
+    function hydrateSaleLeads() {
+      const current = $("saleLead").value;
+      const items = state.leads
+        .filter((lead) => !lead.saleId || lead.saleId === $("saleId").value)
+        .map((lead) => ({
+          value: lead.id,
+          label: `${lead.name} • ${consultantName(lead.consultantId)}`
+        }));
+      hydrateSelect($("saleLead"), items, "Sem lead vinculado", current);
+    }
+
+    async function initClient() {
+      if (!isConfigured()) return;
+      if (!window.supabase?.createClient) throw new Error("Biblioteca do Supabase não carregou.");
+      if (!supabaseClient) {
+        supabaseClient = window.supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseAnonKey);
+      }
+    }
+
+    function normalizeRemoteState(payload = {}) {
+      return {
+        units: Array.isArray(payload.units) ? payload.units : [],
+        consultants: Array.isArray(payload.consultants) ? payload.consultants : [],
+        unitGoals: Array.isArray(payload.unitGoals) ? payload.unitGoals.map((goal) => ({
+          ...goal,
+          target: Number(goal.target || 0),
+          matricula: Number(goal.matricula || 0),
+          renovacao: Number(goal.renovacao || 0),
+          recuperacao: Number(goal.recuperacao || 0),
+          extra: Number(goal.extra || 0)
+        })) : [],
+        consultantGoals: Array.isArray(payload.consultantGoals) ? payload.consultantGoals.map((goal) => ({
+          ...goal,
+          target: Number(goal.target || 0),
+          commissionRate: Number(goal.commissionRate || 0)
+        })) : [],
+        leads: Array.isArray(payload.leads) ? payload.leads.map((lead) => ({
+          ...lead,
+          expectedValue: Number(lead.expectedValue || 0)
+        })) : [],
+        sales: Array.isArray(payload.sales) ? payload.sales.map((sale) => ({
+          ...sale,
+          amount: Number(sale.amount || 0)
+        })) : []
+      };
+    }
+
+    async function reloadRemoteData() {
+      if (!isRemoteMode() || !sessionToken) return;
+      const { data, error } = await supabaseClient.rpc("metafit_snapshot", { p_token: sessionToken });
+      if (error) throw error;
+      state = normalizeRemoteState(data || {});
+      refreshSelects();
+      renderAll();
+    }
+
+    function applyUserVisibility() {
+      const admin = isAdmin();
+      document.querySelectorAll(".only-admin").forEach((el) => el.classList.toggle("hidden", !admin));
+      document.querySelectorAll(".remote-only").forEach((el) => el.classList.toggle("hidden", !isConfigured()));
+      $("logoutBtn").classList.toggle("hidden", !isConfigured());
+      $("currentUserBadge").textContent = currentUser
+        ? `${currentUser.nome} • ${currentUser.perfil === "admin" ? "ADM" : "Operador"}`
+        : "ADM local";
+      const scopedUnitNames = !isAdmin() && isRemoteMode()
+        ? visibleUnits().map((unit) => unit.name)
+        : (currentUser?.allowedUnitNames || []);
+      $("syncStatus").textContent = isConfigured()
+        ? `Online • ${scopedUnitNames.length ? scopedUnitNames.join(", ") : "todas as unidades"}`
+        : "Modo local";
+
+      if (!admin && document.querySelector(".tab.active")?.dataset.tab === "goals") {
+        setActiveTab("dashboard");
+      }
+    }
+
+    async function startSessionByToken(token) {
+      await initClient();
+      const { data, error } = await supabaseClient.rpc("metafit_session", { p_token: token });
+      if (error || !data?.length) throw error || new Error("Sessão inválida.");
+      sessionToken = token;
+      currentUser = normalizeSessionUser(data[0]);
+      $("loginScreen").classList.add("hidden");
+      $("setupScreen").classList.add("hidden");
+      $("app").classList.remove("hidden");
+      applyUserVisibility();
+      await reloadRemoteData();
+      if (isAdmin()) await loadUsers();
+    }
+
+    async function startSessionByLogin(login, password) {
+      await initClient();
+      const { data, error } = await supabaseClient.rpc("metafit_login", {
+        p_login: clean(login),
+        p_password: password
+      });
+      if (error || !data?.length) throw error || new Error("Login inválido.");
+      const row = data[0];
+      sessionToken = row.token;
+      sessionStorage.setItem(SESSION_KEY, sessionToken);
+      currentUser = normalizeSessionUser(row);
+      $("loginScreen").classList.add("hidden");
+      $("setupScreen").classList.add("hidden");
+      $("app").classList.remove("hidden");
+      applyUserVisibility();
+      await reloadRemoteData();
+      if (isAdmin()) await loadUsers();
+    }
+
+    function normalizeSessionUser(row) {
+      return {
+        id: row.id,
+        login: row.login,
+        nome: row.nome,
+        perfil: row.perfil,
+        allowedUnitIds: row.allowed_unit_ids || row.allowedUnitIds || [],
+        allowedUnitNames: row.allowed_unit_names || row.allowedUnitNames || []
+      };
+    }
+
+    async function checkInitialScreen() {
+      await initClient();
+      const { data, error } = await supabaseClient.rpc("metafit_has_admin");
+      if (error) throw error;
+      $("setupScreen").classList.toggle("hidden", !!data);
+      $("loginScreen").classList.toggle("hidden", !data);
+    }
+
+    async function loadUsers() {
+      if (!isRemoteMode() || !isAdmin() || !sessionToken) return;
+      const { data, error } = await supabaseClient.rpc("metafit_list_users", { p_token: sessionToken });
+      if (error) {
+        showNotice("userNotice", error.message || "Erro ao carregar usuários.", "err");
+        return;
+      }
+      users = data || [];
+      renderUsers();
+    }
+
+    function renderUsers() {
+      $("usersRows").innerHTML = users.length ? users.map((user) => `
+        <tr>
+          <td><b>${escapeHTML(user.nome)}</b></td>
+          <td>${escapeHTML(user.login)}</td>
+          <td><span class="status ${user.perfil === "admin" ? "ok" : "blue"}">${user.perfil === "admin" ? "ADM" : "Operador"}</span></td>
+          <td>${user.perfil === "admin"
+            ? "Todas"
+            : (user.unit_names || []).map((name) => escapeHTML(name)).join(", ") || "—"}</td>
+          <td><span class="status ${user.ativo ? "ok" : "bad"}">${user.ativo ? "Ativo" : "Inativo"}</span></td>
+          <td>
+            <div class="mini-actions">
+              <button onclick="editUser('${user.id}')">Editar</button>
+              <button class="danger" onclick="deleteUser('${user.id}')">Excluir</button>
+            </div>
+          </td>
+        </tr>
+      `).join("") : `<tr><td colspan="6" class="empty">Nenhum usuário cadastrado.</td></tr>`;
+    }
+
+    function renderUserUnitChecks(selected = []) {
+      const role = $("userRole").value;
+      const disabled = role === "admin";
+      const effectiveSelected = disabled ? state.units.map((unit) => unit.id) : selected;
+      $("userUnitChecks").innerHTML = state.units.map((unit) => `
+        <label class="check-card">
+          <input type="checkbox" value="${unit.id}" ${effectiveSelected.includes(unit.id) ? "checked" : ""} ${disabled ? "disabled" : ""} />
+          <span>${escapeHTML(unit.name)}</span>
+        </label>
+      `).join("");
+    }
+
+    function selectedUserUnitIds() {
+      return Array.from($("userUnitChecks").querySelectorAll('input[type="checkbox"]:checked')).map((input) => input.value);
+    }
+
+    async function saveUser(event) {
+      event.preventDefault();
+      if (!isRemoteMode() || !isAdmin()) return;
+      const id = $("userId").value || null;
+      const payload = {
+        p_token: sessionToken,
+        p_id: id,
+        p_login: clean($("userLogin").value),
+        p_password: $("userPassword").value,
+        p_name: clean($("userName").value),
+        p_role: $("userRole").value,
+        p_unit_ids: selectedUserUnitIds(),
+        p_active: $("userActive").value === "true"
+      };
+      try {
+        const { error } = await supabaseClient.rpc("metafit_save_user", payload);
+        if (error) throw error;
+        resetUserForm();
+        await loadUsers();
+        showNotice("userNotice", id ? "Usuário atualizado." : "Usuário criado.", "ok");
+      } catch (error) {
+        showNotice("userNotice", error.message || "Erro ao salvar usuário.", "err");
+      }
+    }
+
+    function editUser(id) {
+      const user = users.find((item) => String(item.id) === String(id));
+      if (!user) return;
+      $("userId").value = user.id;
+      $("userLogin").value = user.login || "";
+      $("userPassword").value = "";
+      $("userName").value = user.nome || "";
+      $("userRole").value = user.perfil || "operador";
+      $("userActive").value = String(!!user.ativo);
+      renderUserUnitChecks(user.unit_ids || []);
+      setActiveTab("users");
+    }
+
+    async function deleteUser(id) {
+      if (!confirm("Excluir este usuário?")) return;
+      try {
+        const { error } = await supabaseClient.rpc("metafit_delete_user", { p_token: sessionToken, p_id: id });
+        if (error) throw error;
+        await loadUsers();
+        toast("Usuário excluído");
+      } catch (error) {
+        showNotice("userNotice", error.message || "Erro ao excluir usuário.", "err");
+      }
+    }
+
+    function resetUserForm() {
+      $("userForm").reset();
+      $("userId").value = "";
+      $("userRole").value = "operador";
+      $("userActive").value = "true";
+      renderUserUnitChecks();
+    }
+
+    async function saveUnitGoal(event) {
+      event.preventDefault();
+      const id = $("unitGoalId").value;
+      const month = $("unitGoalMonth").value;
+      const unitId = $("unitGoalUnit").value;
+      const payload = {
+        month,
+        unitId,
+        target: toNumber($("unitGoalTarget").value),
+        matricula: toNumber($("unitGoalMatricula").value),
+        renovacao: toNumber($("unitGoalRenovacao").value),
+        recuperacao: toNumber($("unitGoalRecuperacao").value),
+        extra: toNumber($("unitGoalExtra").value)
+      };
+
+      if (!month || !unitId || payload.target <= 0) {
+        return showNotice("unitGoalNotice", "Preencha mês, unidade e uma meta total válida.", "err");
+      }
+
+      const duplicate = state.unitGoals.find((goal) => goal.month === month && goal.unitId === unitId && goal.id !== id);
+      if (duplicate) {
+        return showNotice("unitGoalNotice", "Essa unidade já tem meta cadastrada nesse mês.", "warn");
+      }
+
+      if (isRemoteMode()) {
+        try {
+          const { error } = await supabaseClient.rpc("metafit_save_unit_goal", {
+            p_token: sessionToken,
+            p_id: id || null,
+            p_month: payload.month,
+            p_unit_id: payload.unitId,
+            p_target: payload.target,
+            p_matricula: payload.matricula,
+            p_renovacao: payload.renovacao,
+            p_recuperacao: payload.recuperacao,
+            p_extra: payload.extra
+          });
+          if (error) throw error;
+          await reloadRemoteData();
+          resetUnitGoalForm();
+          return showNotice("unitGoalNotice", id ? "Meta da unidade atualizada." : "Meta da unidade cadastrada.", "ok");
+        } catch (error) {
+          return showNotice("unitGoalNotice", error.message || "Erro ao salvar meta da unidade.", "err");
+        }
+      }
+
+      if (id) {
+        const existing = state.unitGoals.find((goal) => goal.id === id);
+        Object.assign(existing, payload);
+      } else {
+        state.unitGoals.push({ id: uid(), ...payload });
+      }
+
+      persist();
+      resetUnitGoalForm();
+      renderAll();
+      showNotice("unitGoalNotice", id ? "Meta da unidade atualizada." : "Meta da unidade cadastrada.", "ok");
+    }
+
+    function editUnitGoal(id) {
+      const goal = state.unitGoals.find((item) => item.id === id);
+      if (!goal) return;
+      $("unitGoalId").value = goal.id;
+      $("unitGoalMonth").value = goal.month;
+      $("unitGoalUnit").value = goal.unitId;
+      $("unitGoalTarget").value = goal.target;
+      $("unitGoalMatricula").value = goal.matricula;
+      $("unitGoalRenovacao").value = goal.renovacao;
+      $("unitGoalRecuperacao").value = goal.recuperacao;
+      $("unitGoalExtra").value = goal.extra;
+      setActiveTab("goals");
+    }
+
+    async function deleteUnitGoal(id) {
+      if (!confirm("Excluir esta meta de unidade?")) return;
+      if (isRemoteMode()) {
+        try {
+          const { error } = await supabaseClient.rpc("metafit_delete_unit_goal", { p_token: sessionToken, p_id: id });
+          if (error) throw error;
+          await reloadRemoteData();
+          return toast("Meta de unidade excluída");
+        } catch (error) {
+          return showNotice("unitGoalNotice", error.message || "Erro ao excluir meta da unidade.", "err");
+        }
+      }
+      state.unitGoals = state.unitGoals.filter((goal) => goal.id !== id);
+      persist();
+      renderAll();
+      toast("Meta de unidade excluída");
+    }
+
+    function resetUnitGoalForm() {
+      $("unitGoalForm").reset();
+      $("unitGoalId").value = "";
+      $("unitGoalMonth").value = selectedMonth();
+    }
+
+    async function saveConsultantGoal(event) {
+      event.preventDefault();
+      const id = $("consultantGoalId").value;
+      const month = $("consultantGoalMonth").value;
+      const consultantId = $("consultantGoalConsultant").value;
+      const payload = {
+        month,
+        consultantId,
+        target: toNumber($("consultantGoalTarget").value),
+        commissionRate: toNumber($("consultantGoalCommission").value)
+      };
+
+      if (!month || !consultantId || payload.target <= 0) {
+        return showNotice("consultantGoalNotice", "Preencha mês, consultor e uma meta válida.", "err");
+      }
+
+      const duplicate = state.consultantGoals.find((goal) => goal.month === month && goal.consultantId === consultantId && goal.id !== id);
+      if (duplicate) {
+        return showNotice("consultantGoalNotice", "Esse consultor já tem meta cadastrada nesse mês.", "warn");
+      }
+
+      if (isRemoteMode()) {
+        try {
+          const { error } = await supabaseClient.rpc("metafit_save_consultant_goal", {
+            p_token: sessionToken,
+            p_id: id || null,
+            p_month: payload.month,
+            p_consultant_id: payload.consultantId,
+            p_target: payload.target,
+            p_commission_rate: payload.commissionRate
+          });
+          if (error) throw error;
+          await reloadRemoteData();
+          resetConsultantGoalForm();
+          return showNotice("consultantGoalNotice", id ? "Meta do consultor atualizada." : "Meta do consultor cadastrada.", "ok");
+        } catch (error) {
+          return showNotice("consultantGoalNotice", error.message || "Erro ao salvar meta do consultor.", "err");
+        }
+      }
+
+      if (id) {
+        const existing = state.consultantGoals.find((goal) => goal.id === id);
+        Object.assign(existing, payload);
+      } else {
+        state.consultantGoals.push({ id: uid(), ...payload });
+      }
+
+      persist();
+      resetConsultantGoalForm();
+      renderAll();
+      showNotice("consultantGoalNotice", id ? "Meta do consultor atualizada." : "Meta do consultor cadastrada.", "ok");
+    }
+
+    function editConsultantGoal(id) {
+      const goal = state.consultantGoals.find((item) => item.id === id);
+      if (!goal) return;
+      $("consultantGoalId").value = goal.id;
+      $("consultantGoalMonth").value = goal.month;
+      $("consultantGoalConsultant").value = goal.consultantId;
+      $("consultantGoalTarget").value = goal.target;
+      $("consultantGoalCommission").value = goal.commissionRate;
+      setActiveTab("goals");
+    }
+
+    async function deleteConsultantGoal(id) {
+      if (!confirm("Excluir esta meta de consultor?")) return;
+      if (isRemoteMode()) {
+        try {
+          const { error } = await supabaseClient.rpc("metafit_delete_consultant_goal", { p_token: sessionToken, p_id: id });
+          if (error) throw error;
+          await reloadRemoteData();
+          return toast("Meta de consultor excluída");
+        } catch (error) {
+          return showNotice("consultantGoalNotice", error.message || "Erro ao excluir meta do consultor.", "err");
+        }
+      }
+      state.consultantGoals = state.consultantGoals.filter((goal) => goal.id !== id);
+      persist();
+      renderAll();
+      toast("Meta de consultor excluída");
+    }
+
+    function resetConsultantGoalForm() {
+      $("consultantGoalForm").reset();
+      $("consultantGoalId").value = "";
+      $("consultantGoalMonth").value = selectedMonth();
+    }
+
+    async function saveUnit(event) {
+      event.preventDefault();
+      const id = $("unitId").value;
+      const name = clean($("unitName").value);
+      if (!name) return showNotice("unitNotice", "Informe o nome da unidade.", "err");
+
+      const duplicate = state.units.find((unit) => unit.name.toLowerCase() === name.toLowerCase() && unit.id !== id);
+      if (duplicate) return showNotice("unitNotice", "Já existe uma unidade com esse nome.", "warn");
+
+      if (isRemoteMode()) {
+        try {
+          const { error } = await supabaseClient.rpc("metafit_save_unit", {
+            p_token: sessionToken,
+            p_id: id || null,
+            p_name: name
+          });
+          if (error) throw error;
+          await reloadRemoteData();
+          resetUnitForm();
+          return showNotice("unitNotice", id ? "Unidade atualizada." : "Unidade cadastrada.", "ok");
+        } catch (error) {
+          return showNotice("unitNotice", error.message || "Erro ao salvar unidade.", "err");
+        }
+      }
+
+      if (id) {
+        const unit = state.units.find((item) => item.id === id);
+        unit.name = name;
+      } else {
+        state.units.push({ id: uid(), name });
+      }
+
+      persist();
+      resetUnitForm();
+      renderAll();
+      showNotice("unitNotice", id ? "Unidade atualizada." : "Unidade cadastrada.", "ok");
+    }
+
+    function editUnit(id) {
+      const unit = state.units.find((item) => item.id === id);
+      if (!unit) return;
+      $("unitId").value = unit.id;
+      $("unitName").value = unit.name;
+      setActiveTab("goals");
+    }
+
+    async function deleteUnit(id) {
+      const inUse = state.consultants.some((consultant) => consultant.unitId === id)
+        || state.unitGoals.some((goal) => goal.unitId === id)
+        || state.sales.some((sale) => sale.unitId === id)
+        || state.leads.some((lead) => lead.unitId === id);
+      if (inUse) {
+        return showNotice("unitNotice", "Não dá para excluir uma unidade que já tem histórico ou consultores.", "warn");
+      }
+      if (!confirm("Excluir esta unidade?")) return;
+      if (isRemoteMode()) {
+        try {
+          const { error } = await supabaseClient.rpc("metafit_delete_unit", { p_token: sessionToken, p_id: id });
+          if (error) throw error;
+          await reloadRemoteData();
+          return toast("Unidade excluída");
+        } catch (error) {
+          return showNotice("unitNotice", error.message || "Erro ao excluir unidade.", "err");
+        }
+      }
+      state.units = state.units.filter((unit) => unit.id !== id);
+      persist();
+      renderAll();
+      toast("Unidade excluída");
+    }
+
+    function resetUnitForm() {
+      $("unitId").value = "";
+      $("unitName").value = "";
+    }
+
+    async function saveConsultant(event) {
+      event.preventDefault();
+      const id = $("consultantId").value;
+      const name = clean($("consultantName").value);
+      const unitId = $("consultantUnit").value;
+      const active = $("consultantActive").value === "true";
+      if (!name || !unitId) return showNotice("consultantNotice", "Informe nome e unidade.", "err");
+
+      if (isRemoteMode()) {
+        try {
+          const { error } = await supabaseClient.rpc("metafit_save_consultant", {
+            p_token: sessionToken,
+            p_id: id || null,
+            p_name: name,
+            p_unit_id: unitId,
+            p_active: active
+          });
+          if (error) throw error;
+          await reloadRemoteData();
+          resetConsultantForm();
+          return showNotice("consultantNotice", id ? "Consultor atualizado." : "Consultor cadastrado.", "ok");
+        } catch (error) {
+          return showNotice("consultantNotice", error.message || "Erro ao salvar consultor.", "err");
+        }
+      }
+
+      if (id) {
+        const consultant = state.consultants.find((item) => item.id === id);
+        Object.assign(consultant, { name, unitId, active });
+      } else {
+        state.consultants.push({ id: uid(), name, unitId, active });
+      }
+
+      persist();
+      resetConsultantForm();
+      renderAll();
+      showNotice("consultantNotice", id ? "Consultor atualizado." : "Consultor cadastrado.", "ok");
+    }
+
+    function editConsultant(id) {
+      const consultant = state.consultants.find((item) => item.id === id);
+      if (!consultant) return;
+      $("consultantId").value = consultant.id;
+      $("consultantName").value = consultant.name;
+      $("consultantUnit").value = consultant.unitId;
+      $("consultantActive").value = String(consultant.active);
+      setActiveTab("goals");
+    }
+
+    async function deleteConsultant(id) {
+      const inUse = state.consultantGoals.some((goal) => goal.consultantId === id)
+        || state.sales.some((sale) => sale.consultantId === id)
+        || state.leads.some((lead) => lead.consultantId === id);
+      if (inUse) {
+        return showNotice("consultantNotice", "Não dá para excluir um consultor que já tem histórico.", "warn");
+      }
+      if (!confirm("Excluir este consultor?")) return;
+      if (isRemoteMode()) {
+        try {
+          const { error } = await supabaseClient.rpc("metafit_delete_consultant", { p_token: sessionToken, p_id: id });
+          if (error) throw error;
+          await reloadRemoteData();
+          return toast("Consultor excluído");
+        } catch (error) {
+          return showNotice("consultantNotice", error.message || "Erro ao excluir consultor.", "err");
+        }
+      }
+      state.consultants = state.consultants.filter((consultant) => consultant.id !== id);
+      persist();
+      renderAll();
+      toast("Consultor excluído");
+    }
+
+    function resetConsultantForm() {
+      $("consultantId").value = "";
+      $("consultantName").value = "";
+      $("consultantActive").value = "true";
+      $("consultantUnit").value = "";
+    }
+
+    async function saveSale(event) {
+      event.preventDefault();
+      const id = $("saleId").value;
+      const payload = {
+        date: $("saleDate").value,
+        unitId: $("saleUnit").value,
+        consultantId: $("saleConsultant").value,
+        type: $("saleType").value,
+        amount: toNumber($("saleAmount").value),
+        student: clean($("saleStudent").value),
+        leadId: $("saleLead").value,
+        extraDetail: clean($("saleExtraDetail").value),
+        notes: clean($("saleNotes").value)
+      };
+
+      if (!payload.date || !payload.unitId || !payload.consultantId || !payload.type || payload.amount <= 0 || !payload.student) {
+        return showNotice("saleNotice", "Preencha data, unidade, consultor, tipo, valor e aluno.", "err");
+      }
+
+      if (isRemoteMode()) {
+        try {
+          const { error } = await supabaseClient.rpc("metafit_save_sale", {
+            p_token: sessionToken,
+            p_id: id || null,
+            p_date: payload.date,
+            p_unit_id: payload.unitId,
+            p_consultant_id: payload.consultantId,
+            p_type: payload.type,
+            p_amount: payload.amount,
+            p_student: payload.student,
+            p_lead_id: payload.leadId || null,
+            p_extra_detail: payload.extraDetail || null,
+            p_notes: payload.notes || null
+          });
+          if (error) throw error;
+          await reloadRemoteData();
+          resetSaleForm();
+          return showNotice("saleNotice", id ? "Venda atualizada." : "Venda lançada.", "ok");
+        } catch (error) {
+          return showNotice("saleNotice", error.message || "Erro ao salvar venda.", "err");
+        }
+      }
+
+      if (id) {
+        const existing = state.sales.find((sale) => sale.id === id);
+        if (existing?.leadId && existing.leadId !== payload.leadId) {
+          const previousLead = state.leads.find((lead) => lead.id === existing.leadId);
+          if (previousLead) previousLead.saleId = "";
+        }
+        Object.assign(existing, payload);
+      } else {
+        state.sales.push({ id: uid(), ...payload });
+      }
+
+      if (payload.leadId) {
+        const lead = state.leads.find((item) => item.id === payload.leadId);
+        if (lead) {
+          lead.status = "matriculado";
+          lead.saleId = id || state.sales[state.sales.length - 1].id;
+          lead.convertedAt = payload.date;
+        }
+      }
+
+      persist();
+      resetSaleForm();
+      renderAll();
+      showNotice("saleNotice", id ? "Venda atualizada." : "Venda lançada.", "ok");
+    }
+
+    function editSale(id) {
+      const sale = state.sales.find((item) => item.id === id);
+      if (!sale) return;
+      $("saleId").value = sale.id;
+      $("saleDate").value = sale.date;
+      $("saleUnit").value = sale.unitId;
+      hydrateSaleConsultants();
+      $("saleConsultant").value = sale.consultantId;
+      $("saleType").value = sale.type;
+      $("saleAmount").value = sale.amount;
+      $("saleStudent").value = sale.student;
+      hydrateSaleLeads();
+      $("saleLead").value = sale.leadId || "";
+      $("saleExtraDetail").value = sale.extraDetail || "";
+      $("saleNotes").value = sale.notes || "";
+      toggleExtraField();
+      setActiveTab("sales");
+    }
+
+    async function deleteSale(id) {
+      const sale = state.sales.find((item) => item.id === id);
+      if (!sale) return;
+      if (!confirm("Excluir esta venda?")) return;
+      if (isRemoteMode()) {
+        try {
+          const { error } = await supabaseClient.rpc("metafit_delete_sale", { p_token: sessionToken, p_id: id });
+          if (error) throw error;
+          await reloadRemoteData();
+          return toast("Venda excluída");
+        } catch (error) {
+          return showNotice("saleNotice", error.message || "Erro ao excluir venda.", "err");
+        }
+      }
+      if (sale.leadId) {
+        const lead = state.leads.find((item) => item.id === sale.leadId);
+        if (lead) {
+          lead.saleId = "";
+          if (lead.status === "matriculado") lead.status = "contato";
+          lead.convertedAt = "";
+        }
+      }
+      state.sales = state.sales.filter((item) => item.id !== id);
+      persist();
+      renderAll();
+      toast("Venda excluída");
+    }
+
+    function resetSaleForm() {
+      $("saleForm").reset();
+      $("saleId").value = "";
+      $("saleDate").value = todayISO();
+      $("saleType").value = "matricula";
+      hydrateSaleConsultants();
+      hydrateSaleLeads();
+      toggleExtraField();
+    }
+
+    function toggleExtraField() {
+      $("extraDetailWrap").classList.toggle("hidden", $("saleType").value !== "extra");
+    }
+
+    async function saveLead(event) {
+      event.preventDefault();
+      const id = $("leadId").value;
+      const existingLead = state.leads.find((item) => item.id === id);
+      const payload = {
+        name: clean($("leadName").value),
+        phone: clean($("leadPhone").value),
+        source: clean($("leadSource").value),
+        createdAt: $("leadCreatedAt").value,
+        unitId: $("leadUnit").value,
+        consultantId: $("leadConsultant").value,
+        expectedValue: toNumber($("leadExpectedValue").value),
+        status: $("leadStatus").value
+      };
+
+      if (!payload.name || !payload.createdAt || !payload.unitId || !payload.consultantId) {
+        return showNotice("leadNotice", "Preencha nome, data, unidade e consultor.", "err");
+      }
+
+      if (payload.status === "matriculado" && !(existingLead?.saleId) && payload.expectedValue <= 0) {
+        return showNotice("leadNotice", "Para matricular pelo CRM, informe um valor previsto maior que zero.", "warn");
+      }
+
+      if (isRemoteMode()) {
+        try {
+          const { error } = await supabaseClient.rpc("metafit_save_lead", {
+            p_token: sessionToken,
+            p_id: id || null,
+            p_name: payload.name,
+            p_phone: payload.phone || null,
+            p_source: payload.source || null,
+            p_created_on: payload.createdAt,
+            p_unit_id: payload.unitId,
+            p_consultant_id: payload.consultantId,
+            p_expected_value: payload.expectedValue,
+            p_status: payload.status
+          });
+          if (error) throw error;
+          await reloadRemoteData();
+          resetLeadForm();
+          return showNotice("leadNotice", id ? "Lead atualizado." : "Lead cadastrado.", "ok");
+        } catch (error) {
+          return showNotice("leadNotice", error.message || "Erro ao salvar lead.", "err");
+        }
+      }
+
+      let lead;
+      if (id) {
+        lead = existingLead;
+        Object.assign(lead, payload);
+      } else {
+        lead = { id: uid(), convertedAt: "", saleId: "", ...payload };
+        state.leads.push(lead);
+      }
+
+      if (payload.status === "matriculado" && !lead.saleId) {
+        createSaleFromLead(lead);
+      }
+
+      persist();
+      resetLeadForm();
+      renderAll();
+      showNotice("leadNotice", id ? "Lead atualizado." : "Lead cadastrado.", "ok");
+    }
+
+    function editLead(id) {
+      const lead = state.leads.find((item) => item.id === id);
+      if (!lead) return;
+      $("leadId").value = lead.id;
+      $("leadName").value = lead.name;
+      $("leadPhone").value = lead.phone || "";
+      $("leadSource").value = lead.source || "";
+      $("leadCreatedAt").value = lead.createdAt;
+      $("leadUnit").value = lead.unitId;
+      hydrateLeadConsultants();
+      $("leadConsultant").value = lead.consultantId;
+      $("leadExpectedValue").value = lead.expectedValue || "";
+      $("leadStatus").value = lead.status;
+      setActiveTab("crm");
+    }
+
+    async function deleteLead(id) {
+      const lead = state.leads.find((item) => item.id === id);
+      if (!lead) return;
+      if (lead.saleId) {
+        return showNotice("leadNotice", "Esse lead já virou venda. Exclua a venda vinculada primeiro.", "warn");
+      }
+      if (!confirm("Excluir este lead?")) return;
+      if (isRemoteMode()) {
+        try {
+          const { error } = await supabaseClient.rpc("metafit_delete_lead", { p_token: sessionToken, p_id: id });
+          if (error) throw error;
+          await reloadRemoteData();
+          return toast("Lead excluído");
+        } catch (error) {
+          return showNotice("leadNotice", error.message || "Erro ao excluir lead.", "err");
+        }
+      }
+      state.leads = state.leads.filter((item) => item.id !== id);
+      persist();
+      renderAll();
+      toast("Lead excluído");
+    }
+
+    async function advanceLead(id) {
+      const lead = state.leads.find((item) => item.id === id);
+      if (!lead) return;
+      const order = LEAD_STATUS.map((status) => status.id);
+      const currentIndex = order.indexOf(lead.status);
+      const next = order[Math.min(currentIndex + 1, order.length - 1)];
+      if (next === "matriculado" && !canConvertLead(lead)) {
+        return showNotice("leadNotice", "Informe um valor previsto maior que zero antes de converter o lead.", "warn");
+      }
+      if (isRemoteMode()) {
+        try {
+          const { error } = await supabaseClient.rpc("metafit_change_lead_status", {
+            p_token: sessionToken,
+            p_id: id,
+            p_status: next
+          });
+          if (error) throw error;
+          await reloadRemoteData();
+          return toast(`Lead movido para ${leadStatusInfo(next).label}`);
+        } catch (error) {
+          return showNotice("leadNotice", error.message || "Erro ao mover lead.", "err");
+        }
+      }
+      lead.status = next;
+      if (next === "matriculado" && !lead.saleId) {
+        createSaleFromLead(lead);
+      }
+      persist();
+      renderAll();
+      toast(`Lead movido para ${leadStatusInfo(next).label}`);
+    }
+
+    async function convertLead(id) {
+      const lead = state.leads.find((item) => item.id === id);
+      if (!lead) return;
+      if (!canConvertLead(lead)) {
+        return showNotice("leadNotice", "Informe um valor previsto maior que zero antes de converter o lead.", "warn");
+      }
+      if (isRemoteMode()) {
+        try {
+          const { error } = await supabaseClient.rpc("metafit_change_lead_status", {
+            p_token: sessionToken,
+            p_id: id,
+            p_status: "matriculado"
+          });
+          if (error) throw error;
+          await reloadRemoteData();
+          return toast("Lead convertido em matrícula");
+        } catch (error) {
+          return showNotice("leadNotice", error.message || "Erro ao converter lead.", "err");
+        }
+      }
+      lead.status = "matriculado";
+      if (!lead.saleId) createSaleFromLead(lead);
+      persist();
+      renderAll();
+      toast("Lead convertido em matrícula");
+    }
+
+    function createSaleFromLead(lead) {
+      const sale = {
+        id: uid(),
+        date: todayISO(),
+        unitId: lead.unitId,
+        consultantId: lead.consultantId,
+        type: "matricula",
+        amount: lead.expectedValue || 0,
+        student: lead.name,
+        leadId: lead.id,
+        extraDetail: "",
+        notes: "Venda criada automaticamente pelo CRM"
+      };
+      state.sales.push(sale);
+      lead.saleId = sale.id;
+      lead.convertedAt = sale.date;
+    }
+
+    function canConvertLead(lead) {
+      return Number(lead.expectedValue || 0) > 0;
+    }
+
+    function resetLeadForm() {
+      $("leadForm").reset();
+      $("leadId").value = "";
+      $("leadCreatedAt").value = todayISO();
+      $("leadStatus").value = "novo";
+      hydrateLeadConsultants();
+    }
+
+    function showNotice(id, message, type) {
+      const target = $(id);
+      target.className = `notice show ${type}`;
+      target.textContent = message;
+      clearTimeout(target._timer);
+      target._timer = setTimeout(() => {
+        target.className = "notice";
+        target.textContent = "";
+      }, 2800);
+    }
+
+    function toast(message) {
+      $("toast").textContent = message;
+      $("toast").classList.add("show");
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => $("toast").classList.remove("show"), 2200);
+    }
+
+    function setActiveTab(id, button) {
+      document.querySelectorAll(".section").forEach((section) => section.classList.toggle("active", section.id === id));
+      document.querySelectorAll(".tab").forEach((tab) => tab.classList.toggle("active", tab.dataset.tab === id));
+      if (button) button.classList.add("active");
+      if (id === "reports") renderReports();
+      if (id === "users") loadUsers();
+    }
+
+    function handleViewModeChange() {
+      if ($("viewMode").value === "consultant" && !selectedConsultantId()) {
+        $("filterConsultant").value = allowedConsultants()[0]?.id || "";
+      }
+      renderAll();
+    }
+
+    function handleUnitFilterChange() {
+      hydrateFilterConsultants();
+      if ($("viewMode").value === "consultant" && !selectedConsultantId()) {
+        $("filterConsultant").value = allowedConsultants()[0]?.id || "";
+      }
+      renderAll();
+    }
+
+    function clearFilters() {
+      $("viewMode").value = "owner";
+      $("filterMonth").value = currentMonth();
+      $("filterUnit").value = "";
+      hydrateFilterConsultants();
+      $("filterConsultant").value = "";
+      renderAll();
+    }
+
+    function backupJSON() {
+      const blob = new Blob([JSON.stringify({ version: 1, exportedAt: new Date().toISOString(), ...state }, null, 2)], {
+        type: "application/json"
+      });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `backup-metafit-${todayISO()}.json`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+
+    function importJSON(event) {
+      if (isConfigured()) {
+        event.target.value = "";
+        return toast("Importação de backup fica disponível apenas no modo local");
+      }
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const imported = JSON.parse(reader.result);
+          if (!Array.isArray(imported.units) || !Array.isArray(imported.consultants)) throw new Error("Formato inválido");
+          state = {
+            units: imported.units || [],
+            consultants: imported.consultants || [],
+            unitGoals: imported.unitGoals || [],
+            consultantGoals: imported.consultantGoals || [],
+            leads: imported.leads || [],
+            sales: imported.sales || []
+          };
+          persist();
+          refreshSelects();
+          renderAll();
+          toast("Backup importado");
+        } catch {
+          toast("Arquivo inválido");
+        } finally {
+          event.target.value = "";
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function exportExcel() {
+      const units = unitPerformance();
+      const consultants = consultantPerformance();
+      const sales = filteredSales();
+      const crm = crmPerformance();
+      const scope = topScope();
+      const html = `
+        <html>
+        <head><meta charset="UTF-8"></head>
+        <body>
+          <h1>MetaFit - Relatório</h1>
+          <p>Mês: ${escapeHTML(monthBR(selectedMonth()))}</p>
+          <p>Unidade: ${escapeHTML(selectedUnitId() ? unitName(selectedUnitId()) : "Todas")}</p>
+          <p>Consultor: ${escapeHTML(scopedConsultantId() ? consultantName(scopedConsultantId()) : "Todos")}</p>
+          <h2>Resumo</h2>
+          <table border="1">
+            <tr><th>Meta</th><th>Realizado</th><th>Falta</th><th>Progresso</th></tr>
+            <tr><td>${scope.target}</td><td>${scope.realized}</td><td>${Math.max(scope.target - scope.realized, 0)}</td><td>${scope.target ? ((scope.realized / scope.target) * 100).toFixed(2) : "0"}%</td></tr>
+          </table>
+          <h2>Unidades</h2>
+          <table border="1">
+            <tr><th>Unidade</th><th>Meta</th><th>Realizado</th><th>Falta</th><th>Progresso</th></tr>
+            ${units.map((item) => `<tr><td>${escapeHTML(item.unit.name)}</td><td>${item.target}</td><td>${item.realized}</td><td>${item.missing}</td><td>${item.progress.toFixed(2)}%</td></tr>`).join("")}
+          </table>
+          <h2>Consultores</h2>
+          <table border="1">
+            <tr><th>Consultor</th><th>Meta</th><th>Vendeu</th><th>Status</th><th>Comissão</th></tr>
+            ${consultants.map((item) => `<tr><td>${escapeHTML(item.consultant.name)}</td><td>${item.target}</td><td>${item.sold}</td><td>${escapeHTML(item.status)}</td><td>${item.commission}</td></tr>`).join("")}
+          </table>
+          <h2>Vendas</h2>
+          <table border="1">
+            <tr><th>Data</th><th>Aluno</th><th>Unidade</th><th>Consultor</th><th>Tipo</th><th>Valor</th></tr>
+            ${sales.map((sale) => `<tr><td>${escapeHTML(sale.date)}</td><td>${escapeHTML(sale.student)}</td><td>${escapeHTML(unitName(sale.unitId))}</td><td>${escapeHTML(consultantName(sale.consultantId))}</td><td>${escapeHTML(SALE_TYPES[sale.type])}</td><td>${sale.amount}</td></tr>`).join("")}
+          </table>
+          <h2>CRM</h2>
+          <table border="1">
+            <tr><th>Consultor</th><th>Leads</th><th>Matrículas</th><th>Conversão</th><th>Receita</th></tr>
+            ${crm.map((item) => `<tr><td>${escapeHTML(item.consultant.name)}</td><td>${item.leads}</td><td>${item.converted}</td><td>${item.conversion.toFixed(2)}%</td><td>${item.revenue}</td></tr>`).join("")}
+          </table>
+        </body>
+        </html>
+      `;
+      const blob = new Blob(["\ufeff" + html], { type: "application/vnd.ms-excel;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `metafit_${todayISO()}.xls`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+
+    function printReport() {
+      renderReports();
+      const popup = window.open("", "_blank", "width=1400,height=900");
+      if (!popup) {
+        toast("O navegador bloqueou a janela de impressão");
+        return;
+      }
+
+      const reportHtml = `
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+        <head>
+          <meta charset="UTF-8">
+          <title>Relatório MetaFit</title>
+          <style>
+            @page { size: A4 landscape; margin: 10mm; }
+            body { font-family: Arial, sans-serif; color: #0f172a; }
+            h1 { margin-bottom: 4px; }
+            p { margin-top: 0; color: #475569; }
+            .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:14px 0; }
+            .box { border:1px solid #dbe3ea; border-radius:10px; padding:10px; }
+            .label { font-size:11px; color:#64748b; text-transform:uppercase; }
+            .value { font-size:20px; font-weight:700; margin-top:4px; }
+            table { width:100%; border-collapse:collapse; margin-top:14px; font-size:11px; }
+            th, td { border:1px solid #dbe3ea; padding:7px; text-align:left; }
+            th { background:#eef7f0; color:#166534; }
+            h2 { margin-top:20px; font-size:16px; }
+          </style>
+        </head>
+        <body>
+          <h1>MetaFit - Relatório mensal</h1>
+          <p>${escapeHTML(monthBR(selectedMonth()))} • ${escapeHTML(selectedUnitId() ? unitName(selectedUnitId()) : "Todas as unidades")} • ${escapeHTML(scopedConsultantId() ? consultantName(scopedConsultantId()) : "Todos os consultores")}</p>
+          <div class="grid">
+            <div class="box"><div class="label">Meta</div><div class="value">${money(topScope().target)}</div></div>
+            <div class="box"><div class="label">Realizado</div><div class="value">${money(topScope().realized)}</div></div>
+            <div class="box"><div class="label">Falta</div><div class="value">${money(Math.max(topScope().target - topScope().realized, 0))}</div></div>
+            <div class="box"><div class="label">Progresso</div><div class="value">${pct(topScope().target ? (topScope().realized / topScope().target) * 100 : 0)}</div></div>
+          </div>
+          ${$("reports").innerHTML}
+        </body>
+        </html>
+      `;
+      popup.document.open();
+      popup.document.write(reportHtml);
+      popup.document.close();
+      popup.focus();
+      setTimeout(() => popup.print(), 350);
+    }
+
+    function renderAll() {
+      refreshSelects();
+      applyUserVisibility();
+      renderHeroSignals();
+      renderMetrics();
+      renderDashboard();
+      renderGoalTables();
+      renderStructureTables();
+      renderSalesQuickRead();
+      renderSalesRows();
+      renderCrmQuickRead();
+      renderCrmBoard();
+      renderReports();
+    }
+
+    async function logout() {
+      sessionStorage.removeItem(SESSION_KEY);
+      currentUser = null;
+      sessionToken = null;
+      users = [];
+      state = emptyState();
+      $("app").classList.add("hidden");
+      if (isConfigured()) {
+        await checkInitialScreen();
+      }
+    }
+
+    function bindAuthEvents() {
+      $("loginForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        try {
+          await startSessionByLogin($("loginUser").value, $("loginPassword").value);
+          $("loginForm").reset();
+        } catch (error) {
+          showNotice("loginNotice", error.message || "Erro ao entrar.", "err");
+        }
+      });
+
+      $("setupForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        try {
+          await initClient();
+          const { data, error } = await supabaseClient.rpc("metafit_bootstrap_admin", {
+            p_login: clean($("setupLogin").value),
+            p_password: $("setupPassword").value,
+            p_name: clean($("setupName").value)
+          });
+          if (error || !data?.length) throw error || new Error("Erro ao criar ADM.");
+          const row = data[0];
+          sessionToken = row.token;
+          sessionStorage.setItem(SESSION_KEY, sessionToken);
+          currentUser = normalizeSessionUser(row);
+          $("setupForm").reset();
+          $("setupScreen").classList.add("hidden");
+          $("app").classList.remove("hidden");
+          applyUserVisibility();
+          await reloadRemoteData();
+          await loadUsers();
+        } catch (error) {
+          showNotice("setupNotice", error.message || "Erro ao criar ADM.", "err");
+        }
+      });
+    }
+
+    async function boot() {
+      $("filterMonth").value = currentMonth();
+      $("unitGoalMonth").value = currentMonth();
+      $("consultantGoalMonth").value = currentMonth();
+      $("saleDate").value = todayISO();
+      $("leadCreatedAt").value = todayISO();
+      bindAuthEvents();
+
+      if (!isConfigured()) {
+        currentUser = {
+          id: "local-admin",
+          login: "local",
+          nome: "ADM local",
+          perfil: "admin",
+          allowedUnitIds: seedState.units.map((unit) => unit.id),
+          allowedUnitNames: seedState.units.map((unit) => unit.name)
+        };
+        $("app").classList.remove("hidden");
+        refreshSelects();
+        resetUserForm();
+        renderAll();
+        return;
+      }
+
+      try {
+        await initClient();
+        const token = sessionStorage.getItem(SESSION_KEY);
+        if (token) {
+          await startSessionByToken(token);
+          return;
+        }
+        await checkInitialScreen();
+      } catch (error) {
+        $("loginScreen").classList.remove("hidden");
+        showNotice("loginNotice", error.message || "Erro ao iniciar o sistema.", "err");
+      }
+    }
+
+    boot();
+  </script>
+</body>
+</html>
