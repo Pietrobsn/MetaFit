@@ -8,8 +8,8 @@ O MetaFit foi criado para ajudar gestores de academia a enxergarem o jogo inteir
 
 ## 📸 Prévia do Sistema
 
-![Dashboard MetaFit](<img width="1140" height="1069" alt="image" src="https://github.com/user-attachments/assets/7948f0f4-5250-4586-b965-985e91e9993c" />
-)
+![Dashboard MetaFit](<img width="1140" height="1069" alt="image" src="https://github.com/user-attachments/assets/7948f0f4-5250-4586-b965-985e91e9993c" 
+/>
 
 ---
 
